@@ -3,3 +3,5 @@ dist-newstyle/
 result
 result/
 build/
+_cache/
+_site/

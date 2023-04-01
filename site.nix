@@ -13,18 +13,16 @@ rec {
 
   commands = {
     rebuild = writeShellScriptBin "rebuild" ''
-      cd ${site-with-dependencies}/bin
-      ./website rebuild
+      ${site-with-dependencies}/bin/website rebuild
     '';
 
     clean = writeShellScriptBin "clean" ''
-      cd ${site-with-dependencies}/bin
-      ./website clean
+      ${site-with-dependencies}/bin/website clean
     '';
 
     watch = writeShellScriptBin "watch" ''
-      cd ${site-with-dependencies}/bin
-      ./website watch
+      ${site-with-dependencies}/bin/website clean
+      ${site-with-dependencies}/bin/website watch
     '';
   };
 }
