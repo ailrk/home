@@ -1,0 +1,4 @@
+cradle:
+  cabal:
+    - path: "./website"
+      component: "exe:website"
