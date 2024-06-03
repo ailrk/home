@@ -4,6 +4,7 @@
 module Main where
 
 import Hakyll (
+    Configuration (destinationDirectory),
     Context (..),
     Item (..),
     Tags,
@@ -47,7 +48,7 @@ import Hakyll (
  )
 
 main :: IO ()
-main = hakyllWith defaultConfiguration $ do
+main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
     -- Static files
     match
         ( "images/*.jpg"

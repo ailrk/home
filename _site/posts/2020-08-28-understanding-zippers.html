@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+
+        <title>ailrk - Understanding zippers</title>
+
+        <link rel="stylesheet" type="text/css" href="../style.css?v=0">
+
+        <!-- Metadata. -->
+        <meta name="description" content="Airlk's personal blog">
+        <meta property="og:description" content="A cursor on immutable data type" />
+    </head>
+    <body>
+        <div id="navigation">
+            <h1></h1>
+            <img id="avatar" src="../images/me.png" />
+            <a href="../">home</a>
+            <a href="http://github.com/ailrk">github</a>
+        </div>
+
+        <div id="content">
+    <div id="post">
+
+    <h1>Understanding zippers</h1>
+    <div>
+        A cursor on immutable data type
+        <br />
+        <i>Published on August 28, 2020 under the tag <a title="All pages tagged 'haskell'." href="../tags/haskell.html">haskell</a></i>
+        <br />
+        <br />
+    </div>
+
+    <p><img src="../images/bruno-bucciarati-zipper.jpg" /></p>
+<hr />
+<p>A zipper is a cool concept for immutable data types. You don’t have a zipper by itself; instead, you can “zipperfy” other data structures. For example, you can have a list zipper, tree zipper, graph zipper, and so on. A zipper lets you keep a focus point on the underlying data structure, making operations around that focus point more efficient.</p>
+<p>To get why zippers are useful, let’s first understand the problem they solve. So, before diving into what a zipper is, let’s talk about updating immutable data.</p>
+<h3 id="update-for-immutable-data-types">“Update” for Immutable Data Types</h3>
+<p>One big issue with many immutable types is that their update operations can be pretty slow. For example, updating a compact array with an index is O(1) because the index acts like a “cursor,” letting you directly access the data you want to change. Once you find that data, you can update it in place. But with an immutable array, updating is O(n) because you need to create a new array and copy all the elements, even though most of them stay the same.</p>
+<p>Since we’re dealing with immutability, destructive updates are a no-go. If we want to update anything, we need to rebuild the whole structure. The good news is that, because the data is immutable, we can share as much data as possible between the old and new structures. The cost of updating a value is basically the cost of building the new value while keeping the most shared data.</p>
+<p>Let’s take an immutable tree, for example:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tree</span> k v <span class="ot">=</span> <span class="dt">Node</span> (k, v) [<span class="dt">Tree</span> (k, v)] <span class="op">|</span> <span class="dt">Leaf</span> (k, v) <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tree1 <span class="ot">=</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Node</span> (<span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>   [ <span class="dt">Node</span> (<span class="st">&quot;C&quot;</span>, <span class="st">&quot;C&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>     [ <span class="dt">Leaf</span> (<span class="st">&quot;E&quot;</span>, <span class="st">&quot;E&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>     , <span class="dt">Leaf</span> (<span class="st">&quot;D&quot;</span>, <span class="st">&quot;D&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>     , <span class="dt">Leaf</span> (<span class="st">&quot;F&quot;</span>, <span class="st">&quot;F&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>     ]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>   , <span class="dt">Leaf</span> (<span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>   ]</span></code></pre></div>
+<p><img src="../images/2020-08-28-understanding-zippers-immutable-tree-1.png" /></p>
+<p>Say we want to update <code>E</code> to <code>E'</code>. Let’s assume we have a function <code>update :: k -&gt; (v -&gt; v) -&gt; Tree k v -&gt; Tree k v</code> for this. The process would be: first, find <code>E</code>; then, create a new node <code>E'</code>. Since <code>E</code> is connected to <code>C</code>, we need a new <code>C'</code> that points to <code>E'</code>, <code>D</code>, and <code>F</code>, just like <code>C</code> does. Then, we have <code>A</code>, and we do the same thing for <code>A</code>. By doing this, we only need to create <code>A'</code>, <code>C'</code>, and <code>E'</code>, which is just the height of the tree. The complexity is O(log n).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">update ::</span> k <span class="ot">-&gt;</span> (v <span class="ot">-&gt;</span> v) <span class="ot">-&gt;</span> <span class="dt">Tree</span> k v <span class="ot">-&gt;</span> <span class="dt">Tree</span> k v</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>update a f (<span class="dt">Leaf</span> (k, v)) <span class="ot">=</span> <span class="dt">Leaf</span> (k, <span class="kw">if</span> a <span class="op">==</span> k <span class="kw">then</span> f v <span class="kw">else</span> v) </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>update a f (<span class="dt">Node</span> (k, v) children) <span class="ot">=</span> <span class="dt">Node</span> (k, <span class="kw">if</span> a <span class="op">==</span> k <span class="kw">then</span> f v <span class="kw">else</span> v) children</span></code></pre></div>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-2.png" alt="Log(n) to construct A', C', E'" />
+<figcaption aria-hidden="true">Log(n) to construct <code>A'</code>, <code>C'</code>, <code>E'</code></figcaption>
+</figure>
+<p>If the tree is tall, this is still pretty costly. If the tree is unbalanced, it can get to the worst case of O(n).</p>
+<p><em>Even though we call it an “update,” what’s actually happening is that we’re transforming the old tree into a new one. The end result is similar to an in-place update, but the meaning is different.</em></p>
+<p>What we’ve talked about so far is just a single update operation. But often, you’ll want to do multiple updates around a certain node. For example, if the tree represents GUI elements, you might want to change the color of all siblings of <code>E</code> to red. The update would look like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>updateChain <span class="ot">=</span> update <span class="st">&quot;E&quot;</span> (<span class="fu">const</span> <span class="st">&quot;E'&quot;</span>) </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span> update <span class="st">&quot;D&quot;</span> (<span class="fu">const</span> <span class="st">&quot;D'&quot;</span>) </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span> update <span class="st">&quot;F&quot;</span> (<span class="fu">const</span> <span class="st">&quot;F'&quot;</span>)  </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>tree2 <span class="ot">=</span> updateChain tree1</span></code></pre></div>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-3.png" alt="A and C are copied 3 times" />
+<figcaption aria-hidden="true"><code>A</code> and <code>C</code> are copied 3 times</figcaption>
+</figure>
+<p>See? <code>A</code> and <code>C</code> are not changed, but because we are composing <code>update</code>, we need to copy them over and over again. Every time we invoke <code>update</code>, we need to update both <code>A</code> and <code>C</code>. Since we called <code>update</code> three times, this operation will need to be performed three times because every <code>update</code> starts from <code>A</code>. Imagine doing this to a DOM tree in the browser with thousands of nodes; a lot of unnecessary actions will be performed.</p>
+<p>A simple way to mitigate this is to only call <code>update</code> on the subtree <code>C</code>, then attach the updated subtree <code>C''</code> back to the original tree. We still need to update <code>C</code> three times, but <code>A</code> is only updated once.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">updateC ::</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>updateC (<span class="dt">Node</span> kv children) <span class="ot">=</span> <span class="dt">Node</span> kv (<span class="fu">fmap</span> go children)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        go ctree<span class="op">@</span>(<span class="dt">Node</span> (<span class="st">&quot;C&quot;</span>, _) _) <span class="ot">=</span> updateChain ctree</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        go other <span class="ot">=</span> updateC other</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>updateC _ l<span class="op">@</span>(<span class="dt">Leaf</span> _) <span class="ot">=</span> l</span></code></pre></div>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-4.png" alt="Update the subtree C at once. A is only copied once" />
+<figcaption aria-hidden="true">Update the subtree <code>C</code> at once. <code>A</code> is only copied once</figcaption>
+</figure>
+<p>By calling <code>update</code> closer to where the update should happen, we avoid unnecessary copies along the search path from <code>A</code> to <code>C</code>. <code>C</code> is the focus point; to update all children of <code>C</code>, we only need to map <code>update</code> to all of them. The problem with this approach is that it’s an ad hoc solution, it’s not composable, and you need to know the specific structure of the tree. It would be great if we could set a focus point of the tree so that every time we want to perform some action around that focus point we don’t have to go through the path from the root every time. This is where zippers can help.</p>
+<hr />
+<h3 id="tree-zipper">Tree Zipper</h3>
+<p>Take a look at the following binary tree:</p>
+<p><img src="../images/2020-08-28-understanding-zippers-immutable-tree-5.png" /></p>
+<p>Let’s say we want to update <code>L</code> and <code>M</code>. Based on the conclusion we made above, we want to perform the update around <code>F</code> instead of the root to avoid unnecessary copies. So, we want <code>F</code> to be the focus of our tree. We need a structure that lets us call <code>update</code> from <code>F</code> as if <code>F</code> is a standalone subtree, then automatically stitches the updated subtree <code>F'</code> back to the original tree.</p>
+<p>Luckily, we already have something that does this: the tree zipper! The zipper of the original tree looks like this (Note: this isn’t the exact code representation, it’s just to help visualize):</p>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-6.png" alt="Note it’s not the exact representation in code, it is a representation to help visualize" />
+<figcaption aria-hidden="true">Note it’s not the exact representation in code, it is a representation to help visualize</figcaption>
+</figure>
+<p>This graph looks nothing like the original tree, but trust me, it holds the same amount of information and more. We split the tree into three components: the left context, the focus, and the right context. The focus is the subtree of <code>F</code> that we want to operate on. The left and right contexts are the parts of the tree surrounding the focus. Additionally, we maintain the extra path information that records the path from the root to the current focus.</p>
+<p>Left and right contexts are obtained by the process of “zipping.” The process goes as follows: First, we find the path from the root <code>A</code> to <code>F</code> as <code>A -&gt; C -&gt; M -&gt; F</code>. For <code>A -&gt; C</code>, we need to go to the right of the tree, so we put <code>A</code> and its left subtree into the left context. Then we descend from <code>C -&gt; M</code>, which is also going right, so <code>C</code> is added to the left context. For <code>C -&gt; M</code>, we go to the left, so we put <code>M</code> and its subtree into the right context. Finally, when we find <code>F</code>, we take it and its whole subtree as the focus. Pay attention to the path; it’s crucial to maintain the original structure of the tree.</p>
+<p>So, how do we restore the tree with pieces like this? First, we bring back the right context. Because the last step of the path is <code>(right, M)</code>, we know <code>M</code> is to the right of the focus. We pop the path <code>(right, M)</code> and attach the focus as the left child of <code>M</code>. The result is this partially restored tree:</p>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-7.png" alt="partially restored tree" />
+<figcaption aria-hidden="true">partially restored tree</figcaption>
+</figure>
+<p>We keep popping the path. The next path is <code>(left, C)</code>, so we add the subtree <code>M</code> as the right child of <code>C</code>. Because <code>C</code> and <code>A</code> are both in the left context, at this point, we’ve already reconstructed the original tree. This proves that the zipper representation holds the same information as the original.</p>
+<p>The interesting part of this structure is that the focus is stored as a standalone tree. So, to update the children of <code>F</code>, we don’t need to start from <code>A</code>; all we need to do is update the <code>F</code> subtree. Because the focus is stored separately, we don’t even need to reconnect it back to the tree. All updates are kept local and minimal.</p>
+<p>We can also easily shift the focus. If we want to work around the node <code>M</code> instead of <code>F</code>, we can do this: pop the <code>(right, M)</code> path, so we move up right to <code>M</code>. We add the <code>F</code> subtree as the left child of <code>M</code> and make the entire <code>M</code> subtree the focus. Because <code>M</code> is the root of the right context, after moving it to the focus, there’s nothing left in the right. The zipper with the new focus looks like this:</p>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-8.png" alt="move the focus to M" />
+<figcaption aria-hidden="true">move the focus to <code>M</code></figcaption>
+</figure>
+<p>You can try to restore the tree yourself to prove it’s still the same tree. But now, we can work around <code>M</code> much more efficiently. For example, if we want to update <code>F</code> and <code>L</code> in one go, the only overhead is copying <code>M</code>. Moreover, we can keep moving the focus anywhere we want in the tree and always keep the update local. Though the complexity is still log(n), it’s doing far less repeated work compared to the vanilla tree.</p>
+<p>One observation is that with any focus in the tree, it’s either directly connected with its left context or right context. For example, <code>F</code> is directly connected to its right context <code>M</code>, and <code>M</code> itself is directly connected to its left context <code>C</code>, which connects to its left context <code>A</code>. It’s a recursive process. This means as we walk down the tree, the context is added incrementally. Let’s define the zipper as a tuple <code>(Focus, [TreeDirection])</code> where <code>Focus</code> is the current focus, and <code>TreeDirection</code> is the direction of the context tree relative to the focus plus the context tree itself. This time, the path from <code>A</code> to <code>F</code> looks like this:</p>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-9.png" alt="As we walk down the tree we create a trail of contexts" />
+<figcaption aria-hidden="true">As we walk down the tree we create a trail of contexts</figcaption>
+</figure>
+<p>When the focus is on <code>A</code>, we don’t have any context; the focus is the entire tree. Once we walk to <code>C</code>, the subtree of <code>C</code> becomes the focus, and the tree <code>A -&gt; B</code> becomes the first left context. Then we move right to <code>M</code>, which adds <code>C -&gt; G</code> as its direct context, and this goes on until the focus reaches the target node. The final zipper looks like the following tuple:</p>
+<figure>
+<img src="../images/2020-08-28-understanding-zippers-immutable-tree-10.png" alt="Focus and contexts, each context contains both nodes and the direction" />
+<figcaption aria-hidden="true">Focus and contexts, each context contains both nodes and the direction</figcaption>
+</figure>
+<p>If we combine all the left contexts into one big left context and all the right contexts into one big right context, we can get back to the graph shown earlier. This representation still ensures that the focus is a standalone tree so we can work with it efficiently. It also preserves the history of the path and the context from the root to the focus. It’s compact and cleanly defined.</p>
+<p>Now we can start converting it into code.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">BinaryTree</span> a <span class="ot">=</span> <span class="dt">Leaf</span> a</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                  <span class="op">|</span> <span class="dt">Branch</span> a (<span class="dt">BinaryTree</span> a) (<span class="dt">BinaryTree</span> a)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Ord</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">TreeDirection</span> a <span class="ot">=</span> <span class="dt">TreeLeft</span> a (<span class="dt">BinaryTree</span> a)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                     <span class="op">|</span> <span class="dt">TreeRight</span> a (<span class="dt">BinaryTree</span> a)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Context</span> a <span class="ot">=</span> [<span class="dt">TreeDirection</span> a]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">TreeZipper</span> a <span class="ot">=</span> <span class="dt">TreeZipper</span> (<span class="dt">BinaryTree</span> a) (<span class="dt">Context</span> a)</span></code></pre></div>
+<p>We can create a zipper from a binary tree. To do that, we simply create a Zipper with an empty context.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">fromTree ::</span> <span class="dt">BinaryTree</span> a <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fromTree t <span class="ot">=</span> <span class="dt">TreeZipper</span> t []</span></code></pre></div>
+<p>We can move the focus around the tree. This will change the focus and context.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">moveLeft ::</span> <span class="dt">TreeZipper</span> a <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>moveLeft (<span class="dt">TreeZipper</span> (<span class="dt">Branch</span> x l r) bs) <span class="ot">=</span> <span class="dt">TreeZipper</span> l (<span class="dt">TreeLeft</span> x r <span class="op">:</span> bs)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>moveLeft (<span class="dt">TreeZipper</span> (<span class="dt">Leaf</span> x) _) <span class="ot">=</span> <span class="dt">Leaf</span> x</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">moveRight ::</span> <span class="dt">TreeZipper</span> a <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>moveRight (<span class="dt">TreeZipper</span> (<span class="dt">Branch</span> x l r) bs) <span class="ot">=</span> <span class="dt">TreeZipper</span> r (<span class="dt">TreeRight</span> x l <span class="op">:</span> bs)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>moveRight (<span class="dt">TreeZipper</span> <span class="dt">Leaf</span> x) <span class="ot">=</span> <span class="dt">Leaf</span> x</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ot">moveUp ::</span> <span class="dt">TreeZipper</span> a <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>moveUp (<span class="dt">TreeZipper</span> t ((<span class="dt">TreeLeft</span> x l) <span class="op">:</span> bs)) <span class="ot">=</span> <span class="dt">IsTZ</span> <span class="op">$</span>  <span class="dt">TreeZipper</span> (<span class="dt">Branch</span> x l t) bs</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>moveUp (<span class="dt">TreeZipper</span> t []) <span class="ot">=</span> t</span></code></pre></div>
+<p>Of course, we can modify the focus, which is why we’re here in the first place.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">modify ::</span> (a <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>modify f (<span class="dt">TreeZipper</span> (<span class="dt">Branch</span> x l r) bs) <span class="ot">=</span> <span class="dt">TreeZipper</span> (<span class="dt">Branch</span> (f x) l r) bs</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>modify _ (<span class="dt">TreeZipper</span> <span class="dt">Leaf</span> bs)           <span class="ot">=</span> <span class="dt">TreeZipper</span> <span class="dt">Leaf</span> bs</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ot">set ::</span> a <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a <span class="ot">-&gt;</span> <span class="dt">TreeZipper</span> a</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>set a <span class="ot">=</span> modify (<span class="fu">const</span> a)</span></code></pre></div>
+<p>Note that we use a binary tree here, but this approach can be generalized to any trees or even graphs.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>So, what’s the benefit of a zipper? We get direct focus on the node we want to work around as if we hold a pointer to it, and we have more efficient update operations compared to the default immutable tree. With all these perks, we still preserve everything that the immutable tree gives us. The complexity of other operations like lookup is not affected by the zipper structure, so it’s just a better tree overall. Of course, nothing is free in this world. You do get some additional complexity with the zipper. Instead of just thinking about the tree as nodes and edges, you need to think about the context and focus as well. This extra complexity may or may not be worth it depending on the use case. If you don’t need to frequently update, or the tree is short enough, you may get no benefit from doing all this extra hassle.</p>
+</div>
+
+
+    <div style="clear: both"></div>
+
+    <div id="footer">
+        Site proudly generated by
+        <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+</div>
+
+
+
+
+        <!-- GUID -->
+        <div style="display: none">ce0f13b2-4a83-4c1c-b2b9-b6d18f4ee6d2</div>
+    </body>
+</html>
