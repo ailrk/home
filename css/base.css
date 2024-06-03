@@ -34,7 +34,10 @@ body {
 a {
     color: #111;
     text-decoration: none;
-    border-bottom: 1px solid #555;
+}
+
+a:hover {
+    border-bottom: 2px solid #555;
 }
 
 /* Pandoc 2 puts 'a' elements inside code blocks for linking to lines.  We don't
@@ -167,19 +170,4 @@ div.photoblog div.pagination {
 
 div#footer {
     font-size: 12px;
-}
-
-/* Dark theme, used for photo blogs. */
-html.dark {
-  background-color: #222;
-}
-
-html.dark #content {
-  color: #eee;
-}
-
-html.dark #content a {
-  color: #eee;
-  text-decoration: underline;
-  border-bottom: none;
 }

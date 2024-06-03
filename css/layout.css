@@ -1,19 +1,22 @@
+/* Mobile */
 html {
-    margin: 0px;
-    padding: 0px;
     height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 body {
-    margin: 0px;
-    padding: 0px 0px 0px 0px;
     height: 100%;
+    width: 806px;
 }
 
 div#navigation {
-    background: #f3f3f3 url("../images/header.png") repeat-x left bottom;
-    padding-bottom: 18px;
-    text-align: center;
+    background: #fff url("../images/header.png") repeat-x left bottom;
+    padding-left: 10px;
+
 }
 
 div#navigation a {
@@ -21,38 +24,16 @@ div#navigation a {
     margin: 0px 6px 0px 6px;
 }
 
+
 div#content {
     padding: 12px;
 }
 
-@media all and (min-width: 822px) {
-    html {
-        background: #fff url("../images/sidebar.png") repeat-y left top;
-    }
+div#footer {
+    display: flex;
+}
 
-    div#navigation {
-        background: none;
-        float: left;
-        left: 0px;
-        margin: 0px 0px 0px 18px;
-        position: fixed;
-        top: 0px;
-        width: 102px;
-    }
 
-    div#navigation h1, div#navigation a {
-        display: block;
-        text-align: right;
-    }
-
-    div#navigation a {
-        color: #333;
-        margin: 6px 0px 6px 0px;
-    }
-
-    div#content {
-        margin: 0px 0px 0px 156px;
-        padding: 0px 36px 0px 36px;
-        width: 648px;
-    }
+div#post {
+  padding-left: 20px
 }
