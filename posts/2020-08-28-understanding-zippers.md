@@ -78,7 +78,7 @@ updateC _ l@(Leaf _) = l
 
 ![Update the subtree `C` at once. `A` is only copied once](/images/2020-08-28-understanding-zippers-immutable-tree-4.png)
 
-By calling `update` closer to where the update should happen, we avoid unnecessary copies along the search path from `A` to `C`. `C` is the focus point; to update all children of `C`, we only need to map `update` to all of them. The problem with this approach is that it's an ad hoc solution, it's not composable, and you need to know the specific structure of the tree. It would be great if we could set a focus point of the tree so that every time we want to perform some action around that focus point we don't have to go through the path from the root every time. This is where zippers can help.
+By calling `update` closer to where the update should happen, we avoid unnecessary copies along the search path from `A` to `C`. `C` is the focus point; to update all children of `C`, we only need to map `update` to all of them. The problem with this approach is that it's an ad hoc solution, it's not composable, and you need to know the specific structure of the tree. It would be great if we could set a focus point of the tree so that every time we want to perform some action around that focus point we don't have to go through the path from the root again. This is where zippers can help.
 
 
 ---
@@ -100,13 +100,13 @@ This graph looks nothing like the original tree, but trust me, it holds the same
 
 Left and right contexts are obtained by the process of "zipping." The process goes as follows: First, we find the path from the root `A` to `F` as `A -> C -> M -> F`. For `A -> C`, we need to go to the right of the tree, so we put `A` and its left subtree into the left context. Then we descend from `C -> M`, which is also going right, so `C` is added to the left context. For `C -> M`, we go to the left, so we put `M` and its subtree into the right context. Finally, when we find `F`, we take it and its whole subtree as the focus. Pay attention to the path; it's crucial to maintain the original structure of the tree.
 
-So, how do we restore the tree with pieces like this? First, we bring back the right context. Because the last step of the path is `(right, M)`, we know `M` is to the right of the focus. We pop the path `(right, M)` and attach the focus as the left child of `M`. The result is this partially restored tree:
+How do we restore the original tree from this? First, we bring back the right context. Because the last step of the path is `(right, M)`, we know `M` is to the right of the focus. We pop the path `(right, M)` and attach the focus as the left child of `M`. The result is this partially restored tree:
 
 ![partially restored tree](/images/2020-08-28-understanding-zippers-immutable-tree-7.png)
 
 We keep popping the path. The next path is `(left, C)`, so we add the subtree `M` as the right child of `C`. Because `C` and `A` are both in the left context, at this point, we've already reconstructed the original tree. This proves that the zipper representation holds the same information as the original.
 
-The interesting part of this structure is that the focus is stored as a standalone tree. So, to update the children of `F`, we don't need to start from `A`; all we need to do is update the `F` subtree. Because the focus is stored separately, we don't even need to reconnect it back to the tree. All updates are kept local and minimal.
+The interesting part of this structure is that the focus is stored as a standalone tree. So, to update the children of `F`, we don't need to start from `A`; all we need to do is update the `F` subtree. Because the focus is stored separately, we don't even need to reconnect it back to the tree. All updates are local and minimal.
 
 We can also easily shift the focus. If we want to work around the node `M` instead of `F`, we can do this: pop the `(right, M)` path, so we move up right to `M`. We add the `F` subtree as the left child of `M` and make the entire `M` subtree the focus. Because `M` is the root of the right context, after moving it to the focus, there's nothing left in the right. The zipper with the new focus looks like this:
 
@@ -114,15 +114,15 @@ We can also easily shift the focus. If we want to work around the node `M` inste
 
 You can try to restore the tree yourself to prove it's still the same tree. But now, we can work around `M` much more efficiently. For example, if we want to update `F` and `L` in one go, the only overhead is copying `M`. Moreover, we can keep moving the focus anywhere we want in the tree and always keep the update local. Though the complexity is still log(n), it's doing far less repeated work compared to the vanilla tree.
 
-One observation is that with any focus in the tree, it’s either directly connected with its left context or right context. For example, `F` is directly connected to its right context `M`, and `M` itself is directly connected to its left context `C`, which connects to its left context `A`. It's a recursive process. This means as we walk down the tree, the context is added incrementally. Let’s define the zipper as a tuple `(Focus, [TreeDirection])` where `Focus` is the current focus, and `TreeDirection` is the direction of the context tree relative to the focus plus the context tree itself. This time, the path from `A` to `F` looks like this:
+One observation is that with any focus in the tree, it’s either directly connected with its left context or right context. For example, `F` is directly connected to its right context `M`, and `M` itself is directly connected to its left context `C`, which connects to its left context `A`. It's a recursive process. This means as we walk down the tree, the context is added incrementally. Let’s define the zipper as a tuple `(Focus, [TreeDirection])` where `Focus` is the current focus, and `TreeDirection` is the direction of the context tree relative to the focus plus the context tree itself. If we think about focus this way, the path from `A` to `F` looks like this:
 
 ![As we walk down the tree we create a trail of contexts](/images/2020-08-28-understanding-zippers-immutable-tree-9.png)
 
-When the focus is on `A`, we don’t have any context; the focus is the entire tree. Once we walk to `C`, the subtree of `C` becomes the focus, and the tree `A -> B` becomes the first left context. Then we move right to `M`, which adds `C -> G` as its direct context, and this goes on until the focus reaches the target node. The final zipper looks like the following tuple:
+When the focus is on `A`, we don’t have any context because the focus is the entire tree. Once we walk to `C`, the subtree of `C` becomes the focus, and the tree `A -> B` becomes the first left context. Then we move right to `M`, which adds `C -> G` as its direct context. This goes on until the focus reaches the target node. The final zipper looks like the following tuple:
 
 ![Focus and contexts, each context contains both nodes and the direction](/images/2020-08-28-understanding-zippers-immutable-tree-10.png)
 
-If we combine all the left contexts into one big left context and all the right contexts into one big right context, we can get back to the graph shown earlier. This representation still ensures that the focus is a standalone tree so we can work with it efficiently. It also preserves the history of the path and the context from the root to the focus. It's compact and cleanly defined.
+If we combine all the left contexts into one big left context and all the right contexts into one big right context, we can get back to the earlier graph that split the tree into three components. This representation still ensures that the focus is a standalone tree, which means we can work with it efficiently. In addition that, it also preserves the history of the path and the context from the root to the focus. It's compact and cleanly defined.
 
 Now we can start converting it into code.
 
@@ -147,7 +147,7 @@ fromTree :: BinaryTree a -> TreeZipper a
 fromTree t = TreeZipper t []
 ```
 
-We can move the focus around the tree. This will change the focus and context.
+We can freely move the focus around the tree.
 
 ```haskell
 moveLeft :: TreeZipper a -> TreeZipper a
@@ -159,7 +159,7 @@ moveRight (TreeZipper (Branch x l r) bs) = TreeZipper r (TreeRight x l : bs)
 moveRight (TreeZipper Leaf x) = Leaf x
 
 moveUp :: TreeZipper a -> TreeZipper a
-moveUp (TreeZipper t ((TreeLeft x l) : bs)) = IsTZ $  TreeZipper (Branch x l t) bs
+moveUp (TreeZipper t ((TreeLeft x l) : bs)) = TreeZipper (Branch x l t) bs
 moveUp (TreeZipper t []) = t
 ```
 
