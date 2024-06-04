@@ -37,3 +37,11 @@ div#footer {
 div#post {
   padding-left: 20px
 }
+
+
+
+@media screen and (max-width: 900px) {
+  body {
+    width: 100%;
+  }
+}
