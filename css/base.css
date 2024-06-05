@@ -119,9 +119,6 @@ h3 {
     font-size: 18px;
 }
 
-ul {
-    list-style-image: url("../images/list-style-image.png");
-}
 
 blockquote {
     background: #e6e6e6 url("../images/quote-background.png") no-repeat left top;
