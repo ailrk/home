@@ -6,6 +6,7 @@ module Main where
 import Hakyll (
     Configuration (destinationDirectory),
     Context (..),
+    Identifier,
     Item (..),
     Tags,
     applyAsTemplate,
@@ -22,6 +23,7 @@ import Hakyll (
     escapeHtml,
     field,
     fromCapture,
+    fromList,
     getResourceBody,
     getResourceLBS,
     hakyllWith,
@@ -123,8 +125,17 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
 
         -- copy fonts
         match "fonts/*" $ do
-          route idRoute
-          compile copyFileCompiler
+            route idRoute
+            compile copyFileCompiler
+
+        -- Render some static pages
+        match (fromList pages) $ do
+            route $ setExtension ".html"
+            compile $
+                pandocCompiler
+                    >>= loadAndApplyTemplate "templates/content.html" defaultContext
+                    >>= loadAndApplyTemplate "templates/default.html" defaultContext
+                    >>= relativizeUrls
 
         -- Post list
         create ["posts.html"] $ do
@@ -169,6 +180,9 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
                 pandocCompiler
                     >>= loadAndApplyTemplate "templates/content.html" defaultContext
                     >>= loadAndApplyTemplate "templates/default.html" defaultContext
+
+pages :: [Identifier]
+pages = ["About.md"]
 
 postCtx :: Tags -> Context String
 postCtx tags =
