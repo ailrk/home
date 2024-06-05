@@ -147,7 +147,7 @@ fromTree :: BinaryTree a -> TreeZipper a
 fromTree t = TreeZipper t []
 ```
 
-We can freely move the focus around the tree.
+We can freely move the focus around the tree. 
 
 ```haskell
 moveLeft :: TreeZipper a -> TreeZipper a
