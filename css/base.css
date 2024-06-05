@@ -1,20 +1,20 @@
 @font-face {
   font-family: 'Charter';
-  src: url('/fonts/Charter-Regular.ttf') format('truetype');
+  src: url('./fonts/Charter-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Crimson Pro';
-  src: url('/fonts/CrimsonPro-Regular.ttf') format('truetype');
+  src: url('./fonts/CrimsonPro-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Inconsolata';
-  src: url('/fonts/Inconsolata-Regular.ttf') format('truetype');
+  src: url('./fonts/Inconsolata-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
