@@ -29,7 +29,7 @@ Let's start with some simple utilities. Below is the definition of an identity f
 template <typename T> struct identity { using type = T; };
 ```
 
-To handle all variables in a universal manner, all values in skibid-lang are `struct`s and are subclassed from `template <typename T> struct identity`. This ensures that we can always consult the `::type`, regardless of the value. This also means skibid-lang values are lazy and need to be explicitly evaluated.
+To handle all variables in a uniform manner, all values in skibid-lang are `struct`s and are subclassed from `template <typename T> struct identity`. This ensures that we can always consult the `::type`, regardless of the value. This also means skibid-lang values are lazy and need to be explicitly evaluated.
 
 *Convention 1: Any skibid-lang value always contains a `::type` attribute*
 
