@@ -121,6 +121,11 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
                     >>= loadAndApplyTemplate "templates/default.html" defaultContext
                     >>= relativizeUrls
 
+        -- copy fonts
+        match "fonts/*" $ do
+          route idRoute
+          compile copyFileCompiler
+
         -- Post list
         create ["posts.html"] $ do
             route idRoute

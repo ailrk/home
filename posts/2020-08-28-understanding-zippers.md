@@ -15,11 +15,13 @@ To get why zippers are useful, let's first understand the problem they solve. So
 
 ## "Update" for Immutable Data Types
 
-One big issue with many immutable types is that their update operations can be pretty slow. For example, updating a compact array with an index is O(1) because the index acts like a "cursor," letting you directly access the data you want to change. Once you find that data, you can update it in place. But with an immutable array, updating is O(n) because you need to create a new array and copy all the elements, even though most of them stay the same.
+One big issue with many immutable types is that their update operations can be pretty slow. For example, updating a compact array with an index is O(1) because the index acts like a "cursor," letting you directly access the data you want to change. Once you find that data, you can update it in place. But with an immutable array, updating is O(n) because you need to create a new array and copy all the elements, even though most of them stay the same. Since we're dealing with immutability, destructive updates are a no-go. If we want to update anything, we need to rebuild the whole structure. The good news is that, because the data is immutable, we can share as much data as possible between the old and new structures. 
 
-Since we're dealing with immutability, destructive updates are a no-go. If we want to update anything, we need to rebuild the whole structure. The good news is that, because the data is immutable, we can share as much data as possible between the old and new structures. The cost of updating a value is basically the cost of building the new value while keeping the most shared data.
+The cost of updating a value is the cost of traversing the structure to find that value, plus the cost of building the new structure with the new value, while keeping the most shared data. For example, to update an immutable array, first we need to traverse the array to find the value to update, which is O(n). Then, with sharing, we need to build a new array from the that value to the end of the original array. Let's say the cost for rebuilding is O(k), then the total cost is O(O(n) + O(k)), which is O(n).
 
-Let's take an immutable tree, for example:
+An interesting phenomenon is that the cost of traversing is usually less than or equal to the cost of rebuilding. So so when thinking about the overall cost usually you can just think about the the cost of construction. For example, an immutable hashmap is usually implemented as HAMT (hash array mapped trie). It's a tree but support O(1) lookup. The cost of rebuilding the tree from root to child O(logn), thus the overall complexity is O(logn).
+
+Let's take a close look at immutable tree:
 
 ```haskell
 data Tree k v = Node (k, v) [Tree (k, v)] | Leaf (k, v) deriving (Show, Eq)
@@ -37,12 +39,13 @@ tree1 =
 
 ![](/images/2020-08-28-understanding-zippers-immutable-tree-1.png)
 
-Say we want to update `E` to `E'`. Let's assume we have a function `update :: k -> (v -> v) -> Tree k v -> Tree k v` for this. The process would be: first, find `E`; then, create a new node `E'`. Since `E` is connected to `C`, we need a new `C'` that points to `E'`, `D`, and `F`, just like `C` does. Then, we have `A`, and we do the same thing for `A`. By doing this, we only need to create `A'`, `C'`, and `E'`, which is just the height of the tree. The complexity is O(log n).
+Say we want to update `E` to `E'`. Let's assume we have a function `update :: k -> (v -> v) -> Tree k v -> Tree k v` for this. The process would be: first, find `E`; then, create a new node `E'`. Since `E` is connected to `C`, we need a new `C'` that points to `E'`, `D`, and `F`, just like `C` does. Then, we have `A`, and we do the same thing for `A`. By doing this, we only need to create `A'`, `C'`, and `E'`, which is just the height of the tree. The cost of finding `E` is O(logn), and the cost of building the new tree from `E` back up is also O(logn), so we can simply say the complexity is O(log n).
 
 ```haskell
 update :: k -> (v -> v) -> Tree k v -> Tree k v
 update a f (Leaf (k, v)) = Leaf (k, if a == k then f v else v) 
-update a f (Node (k, v) children) = Node (k, if a == k then f v else v) children
+update a f (Node (k, v) children) =
+    Node (k, if a == k then f v else v) (fmap (update a f) children)
 ```
 
 ![Log(n) to construct `A'`, `C'`, `E'`](/images/2020-08-28-understanding-zippers-immutable-tree-2.png)

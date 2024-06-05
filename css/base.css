@@ -1,3 +1,25 @@
+@font-face {
+  font-family: 'Charter';
+  src: url('/fonts/Charter-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Crimson Pro';
+  src: url('/fonts/CrimsonPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inconsolata';
+  src: url('/fonts/Inconsolata-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 h1, h2, h3 {
     margin: 0px 0px 18px 0px;
     padding: 24px 0px 0px 0px;
@@ -22,8 +44,8 @@ div#footer {
 
 html {
     background-color: #fff;
-    font-size: 16px;
-    font-family: sans-serif;
+    font-size: 18px;
+    font-family: 'Crimson Pro';
     line-height: 24px;
 }
 
@@ -67,6 +89,7 @@ pre {
 pre code {
     background-color: transparent;
     color: #333;
+    font-family: 'Inconsolata';
     font-size: 14px;
     margin: 0px;
     padding: 0px;
@@ -77,7 +100,11 @@ code {
 }
 
 h1, h2, h3 {
-    font-weight: normal;
+    font-weight: bold;
+}
+
+h4, h5, h6 {
+  color: #5c5b5b;
 }
 
 h1 {
