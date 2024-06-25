@@ -31,7 +31,7 @@ executable website
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:
-        base ^>=4.16.1.0
+        base >=4.16.1.0
       , pandoc
       , hakyll
       , hakyll-images
@@ -60,6 +60,7 @@ executable website
 
     ghc-options:
       -- force all warnings to be on and selectively disable some
+      -threaded
       -Weverything
       -Wno-unticked-promoted-constructors
       -Wno-unsafe
