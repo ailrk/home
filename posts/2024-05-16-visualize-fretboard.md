@@ -32,7 +32,7 @@ Everything I do is based on the root and fifth. Root and fifth are the most stab
 
 ![12-notes-legend](../images/2024-05-16-plugable-fretboard-system-root-fifth.png)
 
-I split the fretboard into 5 areas just like how most pentatonic tutorials tell you to, so when I'm working at a small area, I always know where the root and fifth are, where are the root and fifth above this position, and where root and fifth below it. This give you some basic local mobilities. 
+I split the fretboard into 5 areas just like how most pentatonic tutorials tell you to, so when I'm working at a small area, I always know where the root and fifth are, where are the root and fifth above this position, and where root and fifth below it. This give you some basic local mobilities.
 
 
 
@@ -42,27 +42,27 @@ I find it extremely difficult to think about note names in scales. If I'm thinki
 
 ## Root and fifth as landmarks.
 
-Sometimes you can't recall where a scale degree is, but because you always know the root and the fifth, you can easily figure it out. For all 12 notes `1 2b 2 3b 3 4 5b 5 6b 6 7b 7`, root and fifth split it into two subsets base on the distance between them and other notes. It's easy to move 4 semintons at the same position, so given root or fifth position and move 4 semitones, we have `{6b, 6, 7b, 7, 1, 2b 2, 3b, 3}` and `{3b, 3, 4, 5b, 5, 6b 6, 7b, 7}`. For these two ses, any note has a path less than 3 semitones away from either root or the fifth. So it's easy to find any scale degree at least in a single string if you know the root or the fith by heart. 
+Sometimes you can't recall where a scale degree is, but because you always know the root and the fifth, you can easily figure it out. For all 12 notes `1 2b 2 3b 3 4 5b 5 6b 6 7b 7`, root and fifth split it into two subsets base on the distance between them and other notes. It's easy to move 4 semintons at the same position, so given root or fifth position and move 4 semitones, we have `{6b, 6, 7b, 7, 1, 2b 2, 3b, 3}` and `{3b, 3, 4, 5b, 5, 6b 6, 7b, 7}`. For these two ses, any note has a path less than 3 semitones away from either root or the fifth. So it's easy to find any scale degree at least in a single string if you know the root or the fith by heart.
 
-4th is a good addition to this system, but it's not as important as the other two. The good part is together with root and fifth you get sus4 appegio, so get one appegio for free. 
+4th is a good addition to this system, but it's not as important as the other two. The good part is together with root and fifth you get sus4 appegio, so get one appegio for free.
 
-If you want to find notes across strings, you need to study intervals. [This awesome tool](https://www.musictheory.net/exercises/fretboard-interval) is really helpful to build a connection between the interval and the fretboard shape. Once you are comfortable with interval across all 6 strings, you can easily find the 6th or 7th 2 strings apart from the root. 
+If you want to find notes across strings, you need to study intervals. [This awesome tool](https://www.musictheory.net/exercises/fretboard-interval) is really helpful to build a connection between the interval and the fretboard shape. Once you are comfortable with interval across all 6 strings, you can easily find the 6th or 7th 2 strings apart from the root.
 
 To speed up things even further, we can then study the intervals starts from the fifth. If we consider the fifth is the root note, then we can map the scale degree starts from root to the fifth. Look at the following mapping:
 
 ```
 scale degree: {1 , 2b, 2 , 3b, 3 , 4, 5b, 5 , 6b, 6 , 7b, 7}  =>
-5th as root:  {5 , 6b, 6 , 7b, 7 , 1, 2b, 2 , 3b, 3 , 4 , 5b} 
+5th as root:  {5 , 6b, 6 , 7b, 7 , 1, 2b, 2 , 3b, 3 , 4 , 5b}
 ```
 
-With this mapping in mind, you should be able to tell the 4th above 5th is the root, the 7b above 5th is the 4th, etc. 
+With this mapping in mind, you should be able to tell the 4th above 5th is the root, the 7b above 5th is the 4th, etc.
 
 Root and fifth are like basis in the space of 12 notes, it's stable across genres, it's easily to think about. Most scales and appegios have the root and the fourth, so it's pretty flexible as well, you can easily plugin other notes to make it something else.
 
 
 ## Appegios
 
-Because we already know the root and the fifth, we only need to plugin the major third. If we add the 7th as well, we get the major 7th appegio. The following is the major appegio across the entire fretboard. 
+Because we already know the root and the fifth, we only need to plugin the major third. If we add the 7th as well, we get the major 7th appegio. The following is the major appegio across the entire fretboard.
 
 ![Major 7 appegios](/images/2024-05-16-plugable-fretboard-system-major7-appegio.png)
 
@@ -72,7 +72,7 @@ It looks daunting, but if you know root and fifth and learn it position by posit
 ![CAGED shapes](/images/2024-05-16-plugable-fretboard-system-caged-with-shapes.png)
 
 
-But this is still too complicated, when you're improvising in real time, there're quite a lot of information to think about. So after understanding the general relationship betwen the root and the fifth, I will further split it into smaller, actionable patterns. 
+But this is still too complicated, when you're improvising in real time, there're quite a lot of information to think about. So after understanding the general relationship betwen the root and the fifth, I will further split it into smaller, actionable patterns.
 
 ### Major Traids
 
@@ -94,12 +94,12 @@ Now let's extend to the 7th chords. We always play the simplest form first, beca
 
 ### Minor, dominant variations.
 
-Once you know major shapes, it's easy to do minor. All you need to do is to shift the 3b to 3 and 7b to 7. Domain is easy too because you can keep the major 3rd and only flat the 7th. Though it's simple, you still need to practice them individually to be familiar with them. However, instead of treat minor and domiant as complete different entities, we create a relationship between new content and what we already known. 
+Once you know major shapes, it's easy to do minor. All you need to do is to shift the 3b to 3 and 7b to 7. Domain is easy too because you can keep the major 3rd and only flat the 7th. Though it's simple, you still need to practice them individually to be familiar with them. However, instead of treat minor and domiant as complete different entities, we create a relationship between new content and what we already known.
 
 
 
---- 
-## 
+---
+##
 
 last update 2024-06-04
 I will keep adding new content here...
