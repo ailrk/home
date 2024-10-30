@@ -15,6 +15,15 @@
 }
 
 @font-face {
+  font-family: 'PT Mono';
+  src: url('./fonts/PTMono-Regularttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+@font-face {
   font-family: 'Inconsolata';
   src: url('./fonts/Inconsolata-Regular.ttf') format('truetype');
   font-weight: normal;
@@ -92,7 +101,7 @@ pre {
 pre code {
     background-color: transparent;
     color: #333;
-    font-family: 'Inconsolata';
+    font-family: 'PT Mono';
     font-size: 14px;
     margin: 0px;
     padding: 0px;
@@ -100,6 +109,8 @@ pre code {
 
 code {
     color: #cf174e;
+    font-family: 'PT Mono';
+    font-size: 14px;
 }
 
 h1, h2, h3 {
