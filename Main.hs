@@ -1,7 +1,9 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE BlockArguments #-}
 
 module Main where
+
 
 import Hakyll (
     Configuration (destinationDirectory),
@@ -49,8 +51,9 @@ import Hakyll (
     (.||.),
  )
 
+
 main :: IO ()
-main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
+main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
     -- Static files
     match
         ( "images/*.jpg"
@@ -60,15 +63,15 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
             .||. "favicon.ico"
             .||. "files/**"
         )
-        $ do
-            route idRoute
-            compile copyFileCompiler
+        do
+          route idRoute
+          compile copyFileCompiler
 
     -- Index
-    match "index.html" $ do
+    match "index.html" do
         route idRoute
 
-        compile $ do
+        compile do
             tags <- buildTags "posts/*" (fromCapture "tags/*.html")
             posts <- recentFirst =<< loadAll "posts/*"
             let indexContext =
@@ -91,20 +94,20 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
                 .||. "favicon.ico"
                 .||. "files/**"
             )
-            $ do
-                route idRoute
-                compile copyFileCompiler
+            do
+              route idRoute
+              compile copyFileCompiler
 
         -- Dot images
-        match "images/*.dot" $ do
+        match "images/*.dot" do
             route $ setExtension "png"
             compile $ getResourceLBS >>= traverse (unixFilterLBS "dot" ["-Tpng"])
 
         -- Compress CSS into one file.
         match "css/*" $ compile compressCssCompiler
-        create ["style.css"] $ do
+        create ["style.css"] do
             route idRoute
-            compile $ do
+            compile do
                 csses <- loadAll "css/*.css"
                 makeItem $ unlines $ map itemBody csses
 
@@ -112,9 +115,9 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
         tags <- buildTags "posts/*" (fromCapture "tags/*.html")
 
         -- Render each and every post
-        match ("posts/*.md" .||. "posts/*.html" .||. "posts/*.lhs") $ do
+        match ("posts/*.md" .||. "posts/*.html" .||. "posts/*.lhs") do
             route $ setExtension ".html"
-            compile $ do
+            compile do
                 pandocCompiler
                     >>= saveSnapshot "content"
                     >>= return . fmap demoteHeaders
@@ -124,12 +127,12 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
                     >>= relativizeUrls
 
         -- copy fonts
-        match "fonts/*" $ do
+        match "fonts/*" do
             route idRoute
             compile copyFileCompiler
 
         -- Render some static pages
-        match (fromList pages) $ do
+        match (fromList pages) do
             route $ setExtension ".html"
             compile $
                 pandocCompiler
@@ -158,7 +161,7 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
 
             -- Copied from posts, need to refactor
             route idRoute
-            compile $ do
+            compile do
                 posts <- recentFirst =<< loadAll pattern
                 let ctx =
                         constField "title" title
@@ -171,18 +174,20 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} $ do
                     >>= relativizeUrls
 
         -- Read templates
-        match "templates/*" $ compile $ templateCompiler
+        match "templates/*" $ compile templateCompiler
 
         -- Render the 404 page, we don't relativize URL's here.
-        match "404.html" $ do
+        match "404.html" do
             route idRoute
             compile $
                 pandocCompiler
                     >>= loadAndApplyTemplate "templates/content.html" defaultContext
                     >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
+
 pages :: [Identifier]
 pages = ["About.md"]
+
 
 postCtx :: Tags -> Context String
 postCtx tags =
