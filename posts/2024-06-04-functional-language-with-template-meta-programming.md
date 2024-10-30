@@ -37,7 +37,7 @@ To handle all variables in a uniform manner, all values in skibid-lang are `stru
 #### Quotes & unquotes
 
 Quotes allow you to control when an expression is evaluated. For example, `identity<int>::type` will be evaluated to `int`, but `quote<identity<int>::type>` is just a `quote` and can be passed around. To retrieve the value, you can use `unquote<quote<identity<int>>>::type`, which cancels out the `quote`.
- 
+
 ```c++
 template <typename T> struct quote : identity<quote<T>> {};
 template <typename T> struct unquote<quote<T>> : T {};
@@ -90,7 +90,7 @@ template <typename F, typename... Ts> struct apply {
 };
 ```
 
-#### Boolean 
+#### Boolean
 
 Boolean is defined in a similar way.
 
@@ -109,7 +109,7 @@ template <> struct not_<bool_<false>> : bool_<true> {};
 
 `and_` and `or_` are variadic templates. You can also make them binary operations, but the template syntax is already quite cluttered, so the fewer angle brackets, the better for us.
 
-``` ++
+```c++
 template <typename... Ts>
 struct and_ : bool_<(Ts::type::value && ... && true)> {};
 
@@ -154,7 +154,7 @@ It's pretty straightforward to work with this type of list in templates. We can 
 template <typename L, typename R> struct append;
 template <typename R> struct append<nil, R> : R {};
 template <typename H, typename T, typename R> struct append<cons<H, T>, R> : cons<H, append<T, R>> {};
- 
+
 template <typename T> struct last;
 template <> struct last<nil> : nil {};
 template <typename N> struct last<cons<N, nil>> : N {};
@@ -172,8 +172,8 @@ template <typename F> struct map<F, nil> : nil {};
 template <typename F, typename H, typename T> struct map<F, cons<H, T>> : cons<apply<F, H>, map<F, T>>{ };
 
 template <typename T> struct reverse;
-template <typename S1, typename S2> struct __reverse; 
-template <typename S2> struct __reverse<nil, S2> : S2 {}; 
+template <typename S1, typename S2> struct __reverse;
+template <typename S2> struct __reverse<nil, S2> : S2 {};
 template <typename H, typename T, typename S2> struct __reverse<cons<H, T>, S2> : __reverse<T, cons<H, S2>> {};
 template <typename L> struct reverse : __reverse<L, nil> {};
 ```
@@ -210,7 +210,7 @@ struct x__ {};
 using x = var<x__>;
 ```
 
-This is rather daunting, we can make it less painful with some macros. 
+This is rather daunting, we can make it less painful with some macros.
 
 ```c++
 #define declare(n)                                                             \
@@ -218,7 +218,7 @@ This is rather daunting, we can make it less painful with some macros.
     using n = var<n##__tml__internal_defined_var_>
 
 
-// we need to declare variables before being able to use them. 
+// we need to declare variables before being able to use them.
 declare(_v0);
 declare(_v1);
 declare(_v2);
@@ -288,11 +288,11 @@ We define a new helper `strict_let` that extracts quoted `E` and `In`, call `let
 template <typename A, typename E, typename In> struct strict_let;
 
 template <typename A, typename E, typename In>
-struct strict_let<A, quote<E>, quote<In>> 
+struct strict_let<A, quote<E>, quote<In>>
     : quote<typename let_subst_1<A, E, In>::type> {};
 
 template <typename A, typename E, typename In>
-struct let_quoted : 
+struct let_quoted :
     strict_let<typename A::type, typename E::type, typename In::type> {};
 ```
 
@@ -376,7 +376,7 @@ using func =
     lambda<x, y>::begin<
         let<z, int_<2>, in <
             apply < plus, apply <plus, x, y>
-                  , apply <times, z, z> 
+                  , apply <times, z, z>
                   >>>>;
 ```
 
@@ -388,7 +388,7 @@ We have implemented a lot of features so far, let's tight everything together an
 declare(x); declare(y);
 
 template <typename N>
-struct factorial : 
+struct factorial :
     if_ < apply <less, N, int_<1>>
         , int_<1>
         , apply <times, factorial <apply <minus, N, int_<1>>>, N>
@@ -396,13 +396,13 @@ struct factorial :
 
 using plus3 =
         lambda<x>::begin
-            < 
+            <
                apply <plus, x, 3>
             >
 
-using program = 
-    let <x, factorial<int_<10>, in < 
-    let <y, int_<10>,      in < 
+using program =
+    let <x, factorial<int_<10>, in <
+    let <y, int_<10>,      in <
         apply <minus, y, apply <plus3, x>>
     >>>>>;
 
