@@ -1,6 +1,7 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE BlockArguments #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use <&>" #-}
 
 module Main where
 
@@ -48,7 +49,7 @@ import Hakyll (
     tagsRules,
     templateCompiler,
     unixFilterLBS,
-    (.||.),
+    (.||.)
  )
 
 
@@ -154,6 +155,11 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
                     >>= loadAndApplyTemplate "templates/content.html" ctx
                     >>= loadAndApplyTemplate "templates/default.html" ctx
                     >>= relativizeUrls
+
+
+        create ["Books.html"] $ do
+            route idRoute
+            compile copyFileCompiler
 
         -- Post tags
         tagsRules tags $ \tag pattern -> do

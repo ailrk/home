@@ -5,3 +5,4 @@ result/
 build/
 _cache/
 _site/
+.env

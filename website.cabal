@@ -22,31 +22,7 @@ maintainer:         jimmy123good@gmail.com
 extra-source-files: CHANGELOG.md
 
 
-executable website
-    main-is:          Main.hs
-
-    -- Modules included in this executable, other than Main.
-    -- exposed-modules:
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
-    build-depends:
-        base >=4.16.1.0
-      , pandoc
-      , hakyll
-      , hakyll-images
-      , hakyll-sass
-      , filepath
-      , directory
-      , text
-      , time
-      , bytestring
-      , lucid
-      , modern-uri
-
-    hs-source-dirs:   .
-    default-language: Haskell2010
-
+common extensions
     default-extensions:
       LambdaCase
       ImportQualifiedPost
@@ -58,6 +34,7 @@ executable website
       QuasiQuotes
       StandaloneDeriving
 
+common options
     ghc-options:
       -- force all warnings to be on and selectively disable some
       -threaded
@@ -75,3 +52,45 @@ executable website
       -Wno-missing-kind-signatures
       -Wno-ambiguous-fields
       -Wno-missing-export-lists
+
+
+executable website
+    import: extensions, options
+    main-is: Main.hs
+    hs-source-dirs: website
+    build-depends:
+        base >=4.16.1.0
+      , pandoc
+      , hakyll
+      , hakyll-images
+      , hakyll-sass
+      , filepath
+      , directory
+      , text
+      , time
+      , bytestring
+      , lucid
+
+    default-language: Haskell2010
+
+
+executable r2book
+    import: extensions, options
+    main-is: Main.hs
+    hs-source-dirs: r2book
+    build-depends:
+        base >=4.16.1.0
+      , filepath
+      , directory
+      , text
+      , time
+      , bytestring
+      , modern-uri
+      , aws
+      , http-conduit
+      , http-types
+      , conduit
+      , lucid
+      , microlens
+
+    default-language: Haskell2010
