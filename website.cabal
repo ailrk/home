@@ -1,24 +1,9 @@
 cabal-version:      2.4
 name:               website
 version:            0.1.0.0
-
--- A short (one-line) description of the package.
--- synopsis:
-
--- A longer description of the package.
--- description:
-
--- A URL where users can report bugs.
--- bug-reports:
-
--- The license under which the package is released.
--- license:
 author:             Ailrk
-maintainer:         jimmy123good@gmail.com
+maintainer:         jimmy@ailrk.com
 
--- A copyright notice.
--- copyright:
--- category:
 extra-source-files: CHANGELOG.md
 
 
