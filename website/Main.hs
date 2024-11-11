@@ -156,11 +156,6 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
                     >>= loadAndApplyTemplate "templates/default.html" ctx
                     >>= relativizeUrls
 
-
-        create ["Books.html"] $ do
-            route idRoute
-            compile copyFileCompiler
-
         -- Post tags
         tagsRules tags $ \tag pattern -> do
             let title = "Posts tagged " ++ tag
