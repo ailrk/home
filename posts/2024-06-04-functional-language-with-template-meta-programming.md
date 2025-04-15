@@ -1,7 +1,7 @@
 ---
 title: Functional language with template meta programming
 date: 2024-06-04
-description: How functional is C++ template?
+description: ""
 tags: c++
 ---
 

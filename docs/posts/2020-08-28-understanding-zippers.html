@@ -11,7 +11,7 @@
 
         <!-- Metadata. -->
         <meta name="description" content="Airlk's personal blog">
-        <meta property="og:description" content="A cursor on immutable data type" />
+        <meta property="og:description" content />
     </head>
     <body>
         <div id="navigation">
@@ -27,7 +27,7 @@
 
     <h1>Understanding zippers</h1>
     <div>
-        A cursor on immutable data type
+        
         <br />
         <i>Published on August 28, 2020 under the tag <a title="All pages tagged 'haskell'." href="../tags/haskell.html" rel="tag">haskell</a></i>
         <br />
@@ -57,7 +57,7 @@
 <p><img src="../images/2020-08-28-understanding-zippers-immutable-tree-1.png" /></p>
 <p>Say we want to update <code>E</code> to <code>E'</code>. Let’s assume we have a function <code>update :: k -&gt; (v -&gt; v) -&gt; Tree k v -&gt; Tree k v</code> for this. The process would be: first, find <code>E</code>; then, create a new node <code>E'</code>. Since <code>E</code> is connected to <code>C</code>, we need a new <code>C'</code> that points to <code>E'</code>, <code>D</code>, and <code>F</code>, just like <code>C</code> does. Then, we have <code>A</code>, and we do the same thing for <code>A</code>. By doing this, we only need to create <code>A'</code>, <code>C'</code>, and <code>E'</code>, which is just the height of the tree. The cost of finding <code>E</code> is O(logn), and the cost of building the new tree from <code>E</code> back up is also O(logn), so we can simply say the complexity is O(log n).</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">update ::</span> k <span class="ot">-&gt;</span> (v <span class="ot">-&gt;</span> v) <span class="ot">-&gt;</span> <span class="dt">Tree</span> k v <span class="ot">-&gt;</span> <span class="dt">Tree</span> k v</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>update a f (<span class="dt">Leaf</span> (k, v)) <span class="ot">=</span> <span class="dt">Leaf</span> (k, <span class="kw">if</span> a <span class="op">==</span> k <span class="kw">then</span> f v <span class="kw">else</span> v) </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>update a f (<span class="dt">Leaf</span> (k, v)) <span class="ot">=</span> <span class="dt">Leaf</span> (k, <span class="kw">if</span> a <span class="op">==</span> k <span class="kw">then</span> f v <span class="kw">else</span> v)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>update a f (<span class="dt">Node</span> (k, v) children) <span class="ot">=</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Node</span> (k, <span class="kw">if</span> a <span class="op">==</span> k <span class="kw">then</span> f v <span class="kw">else</span> v) (<span class="fu">fmap</span> (update a f) children)</span></code></pre></div>
 <figure>
@@ -67,9 +67,9 @@
 <p>If the tree is tall, this is still pretty costly. If the tree is unbalanced, it can get to the worst case of O(n).</p>
 <p><em>Even though we call it an “update,” what’s actually happening is that we’re transforming the old tree into a new one. The end result is similar to an in-place update, but the meaning is different.</em></p>
 <p>What we’ve talked about so far is just a single update operation. But often, you’ll want to do multiple updates around a certain node. For example, if the tree represents GUI elements, you might want to change the color of all siblings of <code>E</code> to red. The update would look like this:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>updateChain <span class="ot">=</span> update <span class="st">&quot;E&quot;</span> (<span class="fu">const</span> <span class="st">&quot;E'&quot;</span>) </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span> update <span class="st">&quot;D&quot;</span> (<span class="fu">const</span> <span class="st">&quot;D'&quot;</span>) </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span> update <span class="st">&quot;F&quot;</span> (<span class="fu">const</span> <span class="st">&quot;F'&quot;</span>)  </span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>updateChain <span class="ot">=</span> update <span class="st">&quot;E&quot;</span> (<span class="fu">const</span> <span class="st">&quot;E'&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span> update <span class="st">&quot;D&quot;</span> (<span class="fu">const</span> <span class="st">&quot;D'&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span> update <span class="st">&quot;F&quot;</span> (<span class="fu">const</span> <span class="st">&quot;F'&quot;</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>tree2 <span class="ot">=</span> updateChain tree1</span></code></pre></div>
 <figure>

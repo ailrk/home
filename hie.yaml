@@ -2,6 +2,3 @@ cradle:
   cabal:
     - path: "./website"
       component: "exe:website"
-
-    - path: "./r2book"
-      component: "exe:r2book"

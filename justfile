@@ -1,6 +1,5 @@
-CABAL ?= cabal
-CABAL_BUILD_PARALLEL ?= $(shell nproc)
-GHC_MAJOR_VERSION := $(shell ghc --numeric-version | cut -d'.' -f1)
+default:
+  @just --list
 
 check:
 	cabal run -- website check

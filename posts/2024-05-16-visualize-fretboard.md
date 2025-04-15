@@ -2,7 +2,7 @@
 title: Visualize fretboard
 date: 2024-05-16
 tags: guitar
-description: Simplify the fretboard
+description: ""
 ---
 
 

@@ -1,7 +1,7 @@
 ---
 title: Understanding zippers
 date: 2020-08-28
-description: A cursor on immutable data type
+description: ""
 tags: haskell
 ---
 
@@ -15,7 +15,7 @@ To get why zippers are useful, let's first understand the problem they solve. So
 
 ## "Update" for Immutable Data Types
 
-One big issue with many immutable types is that their update operations can be pretty slow. For example, updating a compact array with an index is O(1) because the index acts like a "cursor," letting you directly access the data you want to change. Once you find that data, you can update it in place. But with an immutable array, updating is O(n) because you need to create a new array and copy all the elements, even though most of them stay the same. Since we're dealing with immutability, destructive updates are a no-go. If we want to update anything, we need to rebuild the whole structure. The good news is that, because the data is immutable, we can share as much data as possible between the old and new structures. 
+One big issue with many immutable types is that their update operations can be pretty slow. For example, updating a compact array with an index is O(1) because the index acts like a "cursor," letting you directly access the data you want to change. Once you find that data, you can update it in place. But with an immutable array, updating is O(n) because you need to create a new array and copy all the elements, even though most of them stay the same. Since we're dealing with immutability, destructive updates are a no-go. If we want to update anything, we need to rebuild the whole structure. The good news is that, because the data is immutable, we can share as much data as possible between the old and new structures.
 
 The cost of updating a value is the cost of traversing the structure to find that value, plus the cost of building the new structure with the new value, while keeping the most shared data. For example, to update an immutable array, first we need to traverse the array to find the value to update, which is O(n). Then, with sharing, we need to build a new array from the that value to the end of the original array. Let's say the cost for rebuilding is O(k), then the total cost is O(O(n) + O(k)), which is O(n).
 
@@ -43,7 +43,7 @@ Say we want to update `E` to `E'`. Let's assume we have a function `update :: k 
 
 ```haskell
 update :: k -> (v -> v) -> Tree k v -> Tree k v
-update a f (Leaf (k, v)) = Leaf (k, if a == k then f v else v) 
+update a f (Leaf (k, v)) = Leaf (k, if a == k then f v else v)
 update a f (Node (k, v) children) =
     Node (k, if a == k then f v else v) (fmap (update a f) children)
 ```
@@ -57,16 +57,16 @@ If the tree is tall, this is still pretty costly. If the tree is unbalanced, it 
 What we've talked about so far is just a single update operation. But often, you'll want to do multiple updates around a certain node. For example, if the tree represents GUI elements, you might want to change the color of all siblings of `E` to red. The update would look like this:
 
 ```haskell
-updateChain = update "E" (const "E'") 
-            . update "D" (const "D'") 
-            . update "F" (const "F'")  
+updateChain = update "E" (const "E'")
+            . update "D" (const "D'")
+            . update "F" (const "F'")
 
 tree2 = updateChain tree1
 ```
 
 ![`A` and `C` are copied 3 times](/images/2020-08-28-understanding-zippers-immutable-tree-3.png)
 
-See? `A` and `C` are not changed, but because we are composing `update`, we need to copy them over and over again. Every time we invoke `update`, we need to update both `A` and `C`. Since we called `update` three times, this operation will need to be performed three times because every `update` starts from `A`. Imagine doing this to a DOM tree in the browser with thousands of nodes; a lot of unnecessary actions will be performed. 
+See? `A` and `C` are not changed, but because we are composing `update`, we need to copy them over and over again. Every time we invoke `update`, we need to update both `A` and `C`. Since we called `update` three times, this operation will need to be performed three times because every `update` starts from `A`. Imagine doing this to a DOM tree in the browser with thousands of nodes; a lot of unnecessary actions will be performed.
 
 A simple way to mitigate this is to only call `update` on the subtree `C`, then attach the updated subtree `C''` back to the original tree. We still need to update `C` three times, but `A` is only updated once.
 
@@ -150,7 +150,7 @@ fromTree :: BinaryTree a -> TreeZipper a
 fromTree t = TreeZipper t []
 ```
 
-We can freely move the focus around the tree. 
+We can freely move the focus around the tree.
 
 ```haskell
 moveLeft :: TreeZipper a -> TreeZipper a

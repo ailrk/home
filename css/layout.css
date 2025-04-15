@@ -6,15 +6,17 @@ html {
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    scrollbar-gutter: stable;
 }
 
 body {
     height: 100%;
-    width: 806px;
+    font-size: 130%;
+    width: 60vw;
 }
 
 div#navigation {
-    padding-left: 10px;
+    padding-left: 30px;
 
 }
 
@@ -25,7 +27,7 @@ div#navigation a {
 
 
 div#content {
-    padding: 12px;
+    padding: 20px;
 }
 
 div#footer {
