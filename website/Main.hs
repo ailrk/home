@@ -49,8 +49,12 @@ import Hakyll (
     tagsRules,
     templateCompiler,
     unixFilterLBS,
-    (.||.)
+    (.||.), Compiler
  )
+import Text.Regex.TDFA ((=~))
+import Control.Arrow ((&&&))
+import Hakyll.Core.Compiler (unsafeCompiler)
+
 
 
 main :: IO ()
@@ -124,7 +128,8 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
                     >>= return . fmap demoteHeaders
                     >>= loadAndApplyTemplate "templates/post.html" (postCtx tags)
                     >>= loadAndApplyTemplate "templates/content.html" defaultContext
-                    >>= loadAndApplyTemplate "templates/default.html" defaultContext
+                    >>= pairA . (preloadImages &&& pure)
+                    >>= \(preloads, body) -> loadAndApplyTemplate "templates/default.html" (defaultContext <> preloadField preloads) body
                     >>= relativizeUrls
 
         -- copy fonts
@@ -201,3 +206,22 @@ postCtx tags =
             _ -> unContext mempty key
         , defaultContext
         ]
+
+
+preloadField :: Item String -> Context a
+preloadField preloads = field "preloads" (\_ -> pure $ itemBody preloads)
+
+
+preloadImages :: Item String -> Compiler (Item String)
+preloadImages html = makeItem preloads
+  where
+    preloads = unlines [ "<link rel=\"preload\" as=\"image\" href=\"" ++ url ++ "\">" | url <- imageUrls ]
+    imageUrls =
+      let regex = "<img[^>]+src=[\"']([^\"']+)[\"']" :: String
+          matches = html' =~ regex :: [[String]]
+      in map (!! 1) matches
+    html' = itemBody html
+
+
+pairA :: Applicative m => (m a, m b) -> m (a, b)
+pairA (ma, mb) = (,) <$> ma <*> mb

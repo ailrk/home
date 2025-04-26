@@ -55,5 +55,6 @@ executable website
       , time
       , bytestring
       , lucid
+      , regex-tdfa
 
     default-language: Haskell2010

@@ -1,5 +1,6 @@
 { mkDerivation, base, bytestring, directory, filepath, hakyll
-, hakyll-images, hakyll-sass, lib, lucid, pandoc, text, time
+, hakyll-images, hakyll-sass, lib, lucid, pandoc, regex-tdfa, text
+, time
 }:
 mkDerivation {
   pname = "website";
@@ -9,7 +10,7 @@ mkDerivation {
   isExecutable = true;
   executableHaskellDepends = [
     base bytestring directory filepath hakyll hakyll-images hakyll-sass
-    lucid pandoc text time
+    lucid pandoc regex-tdfa text time
   ];
   license = "unknown";
   mainProgram = "website";
