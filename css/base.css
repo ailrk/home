@@ -1,34 +1,18 @@
 @font-face {
-  font-family: 'Charter';
-  src: url('./fonts/Charter-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'Crimson Pro';
   src: url('./fonts/CrimsonPro-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
+
 
 @font-face {
   font-family: 'PT Mono';
   src: url('./fonts/PTMono-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
-}
-
-
-@font-face {
-  font-family: 'Inconsolata';
-  src: url('./fonts/Inconsolata-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 
@@ -74,20 +58,13 @@ a:hover {
     border-bottom: 2px solid #555;
 }
 
+
 /* Pandoc 2 puts 'a' elements inside code blocks for linking to lines.  We don't
  * want to underline those. */
 code a {
     border-bottom: none;
 }
 
-div.photograph a {
-    border: none;
-}
-
-div.photograph {
-    margin-top:    48px;
-    margin-bottom: 60px;
-}
 
 a img {
     margin-bottom: 0px;
@@ -108,7 +85,7 @@ pre code {
 }
 
 code {
-    color: #cf174e;
+    color: #777;
     font-family: 'PT Mono';
     font-size: 14px;
 }
@@ -140,6 +117,7 @@ blockquote {
     margin-left: 18px;
     padding: 6px 6px 6px 54px;
 }
+
 
 hr {
     border: none;

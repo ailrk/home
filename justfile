@@ -2,14 +2,13 @@ default:
   @just --list
 
 check:
-	cabal run -- website check
+	cabal run --offline -- website check
 
 watch:
-	cabal run -- website watch
+	cabal run --offline -- website watch
 
 build:
-	cabal run r2book
-	cabal run -- website build
+	cabal run --offline -- website build
 
 clean:
-	cabal run -- website clean
+	cabal run --offline -- website clean
