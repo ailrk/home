@@ -53,7 +53,6 @@ import Hakyll (
  )
 import Text.Regex.TDFA ((=~))
 import Control.Arrow ((&&&))
-import Hakyll.Core.Compiler (unsafeCompiler)
 
 
 
