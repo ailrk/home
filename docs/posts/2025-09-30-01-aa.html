@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+
+        <title>ailrk - CGI</title>
+        
+          <link rel="preload" as="image" href="../images/2025-09-30-01/PD93Vd.png">
+<link rel="preload" as="image" href="../images/2025-09-30-01/QDJGJf.png">
+<link rel="preload" as="image" href="../images/2025-09-30-01/tWFnaw.png">
+
+        
+
+        <link rel="preload" href="./fonts/CrimsonPro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="./fonts/PTMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+        <link rel="stylesheet" type="text/css" href="../style.css?v=0">
+        <link rel="icon" type="image/x-icon" href="../favicon.ico">
+
+        <!-- Metadata. -->
+        <meta name="description" content="Airlk's personal blog">
+        <meta property="og:description" content />
+    </head>
+    <body>
+        <div id="navigation">
+            <h1>@ilrk</h1>
+            <br />
+            [<a href="../" class="link">home</a>]
+            [<a href="https://github.com/ailrk" class="link">github</a>]
+            [<a href="../About.html" class="link">about</a>]
+        </div>
+
+        <div id="content">
+    <div id="post">
+
+    <h1>CGI</h1>
+    <div>
+        
+        <br />
+        <i>Published on September 30, 2025 under the tag <a title="All pages tagged 'web'." href="../tags/web.html" rel="tag">web</a></i>
+        <br />
+        <br />
+    </div>
+
+    <p>CGI (Common gateway interface) used to be the most popular way to write dynamic web applications back in the 90s.</p>
+<p>it’s still probably the simplest way to get something up and running on the internet. To write a GCI app, all you need is a http server and some scripts written in any language you like.</p>
+<p>The gist of it is …</p>
+<figure>
+<img src="../images/2025-09-30-01/PD93Vd.png" alt="cgi" />
+<figcaption aria-hidden="true">cgi</figcaption>
+</figure>
+<p>history: NCSA</p>
+<p>introduce perl…</p>
+<p>cgi had some serious performance issue…</p>
+<p>introduce fast_cgi…</p>
+<figure>
+<img src="../images/2025-09-30-01/QDJGJf.png" alt="fast cgi" />
+<figcaption aria-hidden="true">fast cgi</figcaption>
+</figure>
+<p>cgi is still the simplest way to get something up and running on the web…</p>
+<ul>
+<li><p>automatic resource management (process exit after respond)</p></li>
+<li><p>language agnostic (any language will work)</p></li>
+<li><p>simple stack (only need to serve /cgi-bin)</p></li>
+<li><p>Typical web servers of this time had 1-2 CPUs and 1-4 GB of memory.</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> Content-type: text/plain</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> CGI/1.0 test script report:</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> argc is <span class="va">$#</span>. argv is <span class="st">&quot;</span><span class="va">$*</span><span class="st">&quot;</span>.</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> SERVER_SOFTWARE = <span class="va">$SERVER_SOFTWARE</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> SERVER_NAME = <span class="va">$SERVER_NAME</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> GATEWAY_INTERFACE = <span class="va">$GATEWAY_INTERFACE</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> SERVER_PROTOCOL = <span class="va">$SERVER_PROTOCOL</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> SERVER_PORT = <span class="va">$SERVER_PORT</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> REQUEST_METHOD = <span class="va">$REQUEST_METHOD</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> HTTP_ACCEPT = <span class="st">&quot;</span><span class="va">$HTTP_ACCEPT</span><span class="st">&quot;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> PATH_INFO = <span class="va">$PATH_INFO</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> PATH_TRANSLATED = <span class="va">$PATH_TRANSLATED</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> SCRIPT_NAME = <span class="va">$SCRIPT_NAME</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> QUERY_STRING = <span class="va">$QUERY_STRING</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> REMOTE_HOST = <span class="va">$REMOTE_HOST</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> REMOTE_ADDR = <span class="va">$REMOTE_ADDR</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> REMOTE_USER = <span class="va">$REMOTE_USER</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> CONTENT_TYPE = <span class="va">$CONTENT_TYPE</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> CONTENT_LENGTH = <span class="va">$CONTENT_LENGTH</span></span></code></pre></div>
+<p>Example, listen on a webhook and perform some tasks …</p>
+<p>Folder structure</p>
+<pre><code>.
+├── flake.nix
+├── cgi.nix
+├── app
+│   └── cgi-bin
+│       ├─── hook
+│       │    └─── note.pl
+│       └─── hash.cl
+...</code></pre>
+<h4 id="appcgi-binhooknote.pl">/app/cgi-bin/hook/note.pl</h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode perl"><code class="sourceCode perl"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">#!/usr/bin/env perl</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">use</span> <span class="kw">strict</span>;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">use</span> <span class="kw">warnings</span>;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">use</span> <span class="fu">Digest::SHA</span> <span class="ot">qw(</span>hmac_sha256_hex<span class="ot">)</span>;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">warn</span> <span class="fu">scalar</span>(<span class="fu">localtime</span>) . <span class="ot">&quot;</span><span class="st"> - hook called</span><span class="ch">\n</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$dir</span>      = <span class="ot">&quot;</span><span class="st">/srv/note</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$repo_url</span> = <span class="ot">&quot;</span><span class="st">https://github.com/ailrk/note.git</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$secret</span>   = <span class="wa">$ENV</span>{<span class="ot">'</span><span class="ss">GITHUB_NOTE_WEBHOOK_SECRET</span><span class="ot">'</span>};</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify the caller.</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$body</span>;</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">read</span>(STDIN, <span class="dt">$body</span>, <span class="wa">$ENV</span>{<span class="ot">'</span><span class="ss">CONTENT_LENGTH</span><span class="ot">'</span>});</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$computed</span>  = <span class="ot">&quot;</span><span class="st">sha256=</span><span class="ot">&quot;</span> . hmac_sha256_hex(<span class="dt">$body</span>, <span class="dt">$secret</span>);</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$signature</span> = <span class="wa">$ENV</span>{<span class="ot">'</span><span class="ss">HTTP_X_HUB_SIGNATURE_256</span><span class="ot">'</span>} || <span class="ot">''</span>;</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="kw">unless</span> (<span class="dt">$computed</span> <span class="ot">eq</span> <span class="dt">$signature</span>) {</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> <span class="ot">&quot;</span><span class="st">Status: 403 Forbidden</span><span class="ch">\n</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> <span class="ot">&quot;</span><span class="st">Content-Type: text/plain</span><span class="ch">\n\n</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> <span class="ot">&quot;</span><span class="st">Invalid signature</span><span class="ch">\n</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">exit</span>;</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="kw">unless</span> (<span class="ot">-d</span> <span class="dt">$dir</span>) {</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create parent directory if needed</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">my</span> <span class="dt">$parent</span> = <span class="dt">$dir</span>;</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$parent</span> =~ <span class="ot">s{</span><span class="ch">[^</span><span class="bn">/</span><span class="ch">]+$</span><span class="ot">}{}</span>;</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="dt">$parent</span> <span class="kw">unless</span> <span class="ot">-d</span> <span class="dt">$parent</span>;</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">my</span> <span class="dt">$clone_output</span> = <span class="ot">`</span><span class="st">gh repo clone </span><span class="dt">$repo_url</span><span class="st"> </span><span class="dt">$dir</span><span class="st"> 2&gt;&amp;1</span><span class="ot">`</span>;</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="kw">my</span> <span class="dt">$clone_status</span> = <span class="wa">$?</span> &gt;&gt; <span class="dv">8</span>;</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">die</span> <span class="ot">&quot;</span><span class="st">Failed to clone repo: </span><span class="dt">$clone_output</span><span class="ot">&quot;</span> <span class="kw">if</span> <span class="dt">$clone_status</span> != <span class="dv">0</span>;</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="fu">chdir</span> <span class="dt">$dir</span> <span class="ot">or</span> <span class="fu">die</span> <span class="ot">&quot;</span><span class="st">Can't cd to dir </span><span class="dt">$dir</span><span class="st">: </span><span class="wa">$!</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$output</span> = <span class="ot">`</span><span class="st">gh repo sync 2&gt;&amp;1</span><span class="ot">`</span>;</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="kw">my</span> <span class="dt">$status</span> = <span class="wa">$?</span> &gt;&gt; <span class="dv">8</span>;</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span> <span class="ot">&quot;</span><span class="st">Content-Type: text/plain</span><span class="ch">\n\n</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> (<span class="dt">$status</span> == <span class="dv">0</span>) {</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> <span class="ot">&quot;</span><span class="st">Repo synced successfully</span><span class="ch">\n</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>} <span class="kw">else</span> {</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span> <span class="ot">&quot;</span><span class="st">Repo sync failed</span><span class="ch">\n</span><span class="dt">$output</span><span class="ch">\n</span><span class="ot">&quot;</span>;</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>#!/usr/bin/env sbcl --script</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">;; Simple Common Lisp CGI script to return current Git hash</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defun</span><span class="fu"> repo-hash </span>(dir)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Return the latest git hash of DIR, or NIL if not a git repo.&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">let</span> ((git-dir (<span class="kw">merge-pathnames</span> <span class="st">&quot;.git/&quot;</span> (<span class="kw">pathname</span> dir))))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">if</span> (<span class="kw">probe-file</span> git-dir)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        (<span class="kw">let*</span> ((cmd (<span class="kw">format</span> <span class="kw">nil</span> <span class="st">&quot;git --git-dir=~A rev-parse HEAD&quot;</span> git-dir))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>               (output (<span class="kw">with-output-to-string</span> (s)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                         (uiop:run-program cmd <span class="bu">:output</span> s</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                            :error-output :string :ignore-error-status <span class="kw">t</span>))))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>          (<span class="kw">string-trim</span> '(<span class="ch">#\N</span>ewline <span class="ch">#\S</span>pace) output))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="kw">nil</span>)))</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">;; CGI response</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>(<span class="kw">format</span> <span class="kw">t</span> <span class="st">&quot;Content-Type: text/plain~%~%&quot;</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>(<span class="kw">let</span> ((dir <span class="st">&quot;/srv/note&quot;</span>))</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">let</span> ((hash (repo-hash dir)))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">if</span> hash</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        (<span class="kw">format</span> <span class="kw">t</span> <span class="st">&quot;Current Git hash: ~A~%&quot;</span> hash)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        (<span class="kw">format</span> <span class="kw">t</span> <span class="st">&quot;Directory ~A is not a git repository.~%&quot;</span> dir))))</span></code></pre></div>
+<p>To run this script, the http server needs to …</p>
+<p>Lots of http logic that we do in application code are now the responsibility of the http server…</p>
+<p>The complete setup in nix…</p>
+<h4 id="cgi.nix">/cgi.nix</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="va">config</span><span class="op">,</span> <span class="va">pkgs</span><span class="op">,</span> <span class="op">...</span> <span class="op">}</span>:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="va">services</span>.<span class="va">fcgiwrap</span>.<span class="va">instances</span>.<span class="va">app</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">process</span> <span class="op">=</span> <span class="op">{</span> <span class="va">user</span> <span class="op">=</span> <span class="st">&quot;nginx&quot;</span><span class="op">;</span> <span class="va">group</span> <span class="op">=</span> <span class="st">&quot;nginx&quot;</span><span class="op">;</span> <span class="op">};</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">socket</span> <span class="op">=</span> <span class="op">{</span> <span class="va">user</span> <span class="op">=</span> <span class="st">&quot;nginx&quot;</span><span class="op">;</span> <span class="va">group</span> <span class="op">=</span> <span class="st">&quot;nginx&quot;</span><span class="op">;</span> <span class="op">};</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">socket</span>.<span class="va">mode</span> <span class="op">=</span> <span class="st">&quot;0660&quot;</span><span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">socket</span>.<span class="va">address</span> <span class="op">=</span> <span class="st">&quot;/run/fcgiwrap-app.socket&quot;</span><span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">systemd</span>.<span class="va">services</span>.<span class="st">&quot;fcgiwrap-app&quot;</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make sure it starts after nginx user is created.</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Otherwise nixos will just give it a random UID.</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="va">after</span> <span class="op">=</span> <span class="op">[</span> <span class="st">&quot;network.target&quot;</span> <span class="op">];</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Need to give fcgi server access to perl</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="va">serviceConfig</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      <span class="va">Environment</span> <span class="op">=</span> <span class="st">&quot;PATH=</span><span class="sc">${</span>pkgs.perl<span class="sc">}</span><span class="st">/bin&quot;</span><span class="op">;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>      <span class="va">EnvironmentFile</span> <span class="op">=</span> config.sops.templates.<span class="st">&quot;fcgi-envs&quot;</span>.path<span class="op">;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="va">services</span>.<span class="va">nginx</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="va">virtualHosts</span>.<span class="st">&quot;</span>app.example.com<span class="st">&quot;</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      <span class="va">forceSSL</span> <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      <span class="va">enableACME</span> <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>      <span class="va">root</span> <span class="op">=</span> <span class="st">&quot;/var/run/app&quot;</span><span class="op">;</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>      <span class="va">extraConfig</span> <span class="op">=</span> <span class="st">''</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="st">        limit_req_zone $binary_remote_addr zone=cgi_limit:10m rate=5r/s;</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="st">      ''</span><span class="op">;</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>      <span class="va">locations</span>.<span class="st">&quot;/cgi-bin&quot;</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="va">extraConfig</span> <span class="op">=</span> <span class="st">''</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="st">          fastcgi_pass  unix:/run/fcgiwrap-app.socket;</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="st">          fastcgi_param REQUEST_METHOD  $request_method;</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="st">          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="st">          fastcgi_param REQUEST_METHOD  $request_method;</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="st">          fastcgi_param QUERY_STRING    $query_string;</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="st">          fastcgi_param CONTENT_TYPE    $content_type;</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="st">          fastcgi_param CONTENT_LENGTH  $content_length;</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="st">          limit_req zone=cgi_limit burst=10 nodelay;</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="st">          limit_req_status 429;</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="st">        ''</span><span class="op">;</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>      <span class="op">};</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>  <span class="va">systemd</span>.<span class="va">services</span>.<span class="va">copy-app-cgi</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>    <span class="va">description</span> <span class="op">=</span> <span class="st">&quot;Generate Authelia secret files if missing&quot;</span><span class="op">;</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    <span class="va">wantedBy</span> <span class="op">=</span> <span class="op">[</span> <span class="st">&quot;multi-user.target&quot;</span> <span class="op">];</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    <span class="va">serviceConfig</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>      <span class="va">Type</span> <span class="op">=</span> <span class="st">&quot;oneshot&quot;</span><span class="op">;</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>      <span class="va">ExecStart</span> <span class="op">=</span> pkgs.writeShellScript <span class="st">&quot;copy-app-cgi&quot;</span> <span class="st">''</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="st">        rm -rf /var/run/app &amp;&amp; mkdir -p /var/run/app</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="st">        cp -r </span><span class="sc">${</span>app<span class="sc">}</span><span class="st">/* /var/run/app</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="st">        chown -R nginx:nginx /var/run/app</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="st">      ''</span><span class="op">;</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>      <span class="va">RemainAfterExit</span> <span class="op">=</span> <span class="cn">false</span><span class="op">;</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Paul Graham &amp; viaweb, Continutation</p>
+<figure>
+<img src="../images/2025-09-30-01/tWFnaw.png" alt="viaweb" />
+<figcaption aria-hidden="true">viaweb</figcaption>
+</figure>
+<p>Security: (eval, escape string, etc)</p>
+<table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 9%" />
+<col style="width: 72%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>CGI</strong></td>
+<td><strong>1993</strong></td>
+<td>Standardized for early web servers (NCSA httpd, later Apache).</td>
+</tr>
+<tr class="even">
+<td><strong>PHP/FI</strong></td>
+<td><strong>1995</strong></td>
+<td>Started as CGI scripts in C. Later evolved into the PHP for Apache.</td>
+</tr>
+<tr class="odd">
+<td><strong>FastCGI</strong></td>
+<td><strong>1996</strong></td>
+<td>Developed to avoid fork-per-request. Persistent processes+socket.</td>
+</tr>
+<tr class="even">
+<td><strong>Java Servlet</strong></td>
+<td><strong>1997</strong></td>
+<td>Java equivalent to CGI developed by SUN, multithreaded.</td>
+</tr>
+<tr class="odd">
+<td><strong>WSGI</strong></td>
+<td><strong>2003</strong></td>
+<td>Analogous to CGI but Python-only and persistent.</td>
+</tr>
+<tr class="even">
+<td><strong>Rack</strong></td>
+<td><strong>2007</strong></td>
+<td>Heavily inspired by WSGI. Became the basis for Rails, Sinatra, etc.</td>
+</tr>
+<tr class="odd">
+<td><strong>WAI</strong></td>
+<td><strong>2009</strong></td>
+<td>Haskell equivalent to WSGI/Rack.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 21%" />
+<col style="width: 29%" />
+<col style="width: 38%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>1993–2000</td>
+<td>CGI</td>
+<td></td>
+<td>Fork per request, simple, language-agnostic</td>
+</tr>
+<tr class="even">
+<td>1997–2005</td>
+<td>FastCGI / WSGI / Servlets</td>
+<td></td>
+<td>Persistent processes, abstract gateway</td>
+</tr>
+<tr class="odd">
+<td>2005–2015</td>
+<td>Hidden inside framework</td>
+<td>Rails, Django, Spring MVC, ASP.NET</td>
+<td>Framework handles HTTP, routing, session</td>
+</tr>
+<tr class="even">
+<td>2009–2018</td>
+<td>Node.js native</td>
+<td>Express</td>
+<td>Event-driven, async, no traditional gateway</td>
+</tr>
+<tr class="odd">
+<td>2015–present</td>
+<td>Embedded HTTP server</td>
+<td>Spring Boot, Go net/http, Actix</td>
+<td>Language-specific HTTP servers, microservices</td>
+</tr>
+</tbody>
+</table>
+<p>future:</p>
+<p>Key points:
+CGI is fun
+CGI is still the easiet way to write web application
+CGI is language agnostic
+The concept of a Gateway is becoming more and more blury, today it’s completed merged into backend frameworks today.
+reason:
+- language specific implementations gives best performance
+-
+result:
+web framework becomes more and more opaque, people no longer touch the HTTP stack first hand.</p>
+<h3 id="reference">Reference</h3>
+<ul>
+<li><a href="https://www.cgi101.com/book/">Cgi Programming 101: Perl for the World Wide Web, Jacqueline D. Hamilton</a></li>
+<li><a href="https://www.oreilly.com/openbook/cgi/">CGI Programming on the world wide web, Shishir Gundavaram</a></li>
+<li><a href="https://nginx.org/en/docs/http/ngx_http_fastcgi_module.html">ngx_http_fastcgi_module</a></li>
+<li><a href="https://github.com/gnosek/fcgiwrap">fcgiwrap</a></li>
+<li><a href="https://sep.turbifycdn.com/ty/cdn/paulgraham/bbnexcerpts.txt?t=1688221954&amp;">Lisp in Web-Based Applications, Paul Graham</a></li>
+<li><a href="https://www6.uniovi.es/~antonio/ncsa_httpd/cgi/">The Common Gateway Interface, ncsa</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/draft-coar-cgi-v11-00">The WWW Common Gateway Interface Version 1.1</a></li>
+<li><a href="https://www6.uniovi.es/~antonio/ncsa_httpd/cgi/security.html">Writing secure CGI scripts</a></li>
+<li><a href="https://jacob.gold/posts/serving-200-million-requests-with-cgi-bin/">Serving 200 million requests per day with a cgi-bin</a></li>
+<li><a href="https://jacob.gold/posts/serving-half-billion-requests-with-rust-cgi/">Serving a half billion requests per day with Rust + CGI</a></li>
+<li><a href="https://www.scriptarchive.com/download.cgi?s=formmail&amp;c=txt&amp;f=FormMail%2Epl">FormMail.pl</a></li>
+<li><a href="https://www.scriptarchive.com/formmail.html">FormMail</a></li>
+<li><a href="http://www.beedub.com/book/2nd/guestbk.doc.html#19072">Practical Programming in Tcl and Tk, Brent Welch</a></li>
+</ul>
+</div>
+
+
+    <div style="clear: both"></div>
+
+    <div id="footer">
+        Site proudly generated by
+        <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+</div>
+
+
+
+
+        <!-- GUID -->
+        <div style="display: none">ce0f13b2-4a83-4c1c-b2b9-b6d18f4ee6d2</div>
+    </body>
+</html>

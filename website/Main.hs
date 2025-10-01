@@ -60,10 +60,10 @@ main :: IO ()
 main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
     -- Static files
     match
-        ( "images/*.jpg"
-            .||. "images/*.png"
-            .||. "images/*.gif"
-            .||. "images/*.mp4"
+        ( "images/**/*.jpg"
+            .||. "images/**/*.png"
+            .||. "images/**/*.gif"
+            .||. "images/**/*.mp4"
             .||. "favicon.ico"
             .||. "files/**"
         )
