@@ -16,10 +16,10 @@
 }
 
 
-h1, h2, h3 {
-    margin: 0px 0px 18px 0px;
-    padding: 24px 0px 0px 0px;
+h4, h5, h6 {
+  color: #5c5b5b;
 }
+
 
 p, ul {
     margin: 18px 0px 18px 0px;
@@ -94,27 +94,6 @@ code {
     font-family: 'PT Mono';
     font-size: 14px;
 }
-
-h1, h2, h3 {
-    font-weight: bold;
-}
-
-h4, h5, h6 {
-  color: #5c5b5b;
-}
-
-h1 {
-    font-size: 30px;
-}
-
-h2 {
-    font-size: 28px;
-}
-
-h3 {
-    font-size: 24px;
-}
-
 
 blockquote {
     background: #e6e6e6 url("../images/quote-background.png") no-repeat left top;
