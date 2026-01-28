@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+
+        <title>ailrk - Report on Efficient Amortised and Real-Time Queues</title>
+        
+          
+        
+
+        <link rel="preload" href="../fonts/CrimsonPro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="../fonts/PTMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+        <link rel="stylesheet" type="text/css" href="../style.css?v=0">
+        <link rel="icon" type="image/x-icon" href="../favicon.ico">
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+        <!-- Metadata. -->
+        <meta name="description" content="Airlk's personal blog">
+        <meta property="og:description" content />
+    </head>
+    <body>
+        <div id="navigation">
+            <h1>@ilrk</h1>
+            <br />
+            [<a href="../" class="link">home</a>]
+            [<a href="https://github.com/ailrk" class="link">github</a>]
+            [<a href="../About.html" class="link">about</a>]
+        </div>
+
+        <div id="content">
+    <div id="post">
+
+    <h1>Report on Efficient Amortised and Real-Time Queues</h1>
+    <div>
+        
+        <br />
+        <i>Published on January  1, 2025 under the tag <a title="All pages tagged 'en'." href="../tags/en.html" rel="tag">en</a></i>
+        <br />
+        <br />
+    </div>
+
+    <p>I read this <a href="https://www.well-typed.com/blog/2016/01/efficient-queues/">well-typepd article</a> about designing efficient armortised queues. It helps me understand the impact of laziness and the performance of Haskell data structures. The article implements 4 types of queues, each on has different performance characteristics.</p>
+<p>The goal is to implement a LIFO queue data structure with good amortised performance. The queue needs to support <code>snoc</code> (pushing from the tail), <code>head</code>, and <code>tail</code>. As we are going to see, laziness moves complexity around, which can make it difficult to analyse. However, laziness is also a great tool to implement good amortized bound.</p>
+<p><strong>Queue0: lazy list</strong>: This queue is simply a lazy list. <code>snoc</code> is define as <code>Q0 (xs ++ (Cons x Nil))</code>. Because <code>++</code> is lazy, when building up the queue with <code>snoc</code> it’s <span class="math inline">\(O(1)\)</span>, it merely creates a thunk that insert to the end of the list.</p>
+<p><strong>Queue1: spine strict</strong>: This queue is a strict banker’s queue with spine-strick front and rear buckets. The complexity is straight forward becasue all spines are evaluated to whnf. The problem is that if we reuse the persistent queue on the edge of rebalancing, the cost has to be incurred repeatedly, this stops us from claiming it from being amortized <span class="math inline">\(O(1)\)</span>.</p>
+<p><strong>Queue2: front lazy rear strict</strong>: This queue improved on queue1, it makes the front lazy. So when rebalance, the reverse and append operatoins are all thunks, which can be shared among persistent copies.</p>
+<p><strong>Queue3: Real-time with Delay and Progress</strong>: This queue is designed to improve on queue2. Queue2’s average snoc is fast <span class="math inline">\(O(1)\)</span>, but rebalance is slow <span class="math inline">\(O(n)\)</span>, the performance will spikes when rebalance kicks in. It’s fine for most cases, but can be a problem if it’s a real time application. Queue3 uses <code>Delay</code> and <code>Progress</code> to track the progress, and spread the cost of append and reverse to each snoc.</p>
+<h4 id="reports">Reports</h4>
+<p>The banker’s queue insert to the rear, when rear has more elements then the front, it appends the rear to the front. This frequency of rebalance grows logarithmically: The more elements there are in the queue, the less requent rebalance happens.</p>
+<hr />
+<p>The benchmark result fluctunates a lot when data set is small.</p>
+<p>I measured the <code>snoc</code> operation in batch, repeated the measurement for several times, then took average to get the estimated cost. When the batch size is small, you get a quite large variance. GC can easily kick in and mess up the measurement.</p>
+<p>Queue3’s <code>snoc</code> is supposed to have the least variance, but in testing I find it hard to get the expected result. When sample size is small it always has the largest variance. It’s probably because it uses more memory hence more GC. When sample size is large, it seems it does have less variance then queue0. However, when I increase nursery size it somehow perform worse.</p>
+<hr />
+<p>Compiler options can make drastic differences.</p>
+<p>Non moving gc vs Copy gc are totally different, if you have two binaries with the same code but different gc in the runtime, they perform drastically different. The optimization level, threading settings, inline are all important factors when analysing performance.</p>
+<p>In my case, increase the nursery size from 1M default to 128M with <code>--A128M</code> increases the productivity from “30%” to “90%”. Also use concurrent and non-stop gc with <code>-N -qg -xs</code> improves the productivity as well.</p>
+<hr />
+<p>I ran <code>benchVariance[0..3]</code> with the following setting:</p>
+<pre><code># cabal run runner --ghc-options=&quot;-O2 -rtsopts&quot; -- &quot;0&quot; +RTS -N -qg -A512M -xn -s -RTS
+# cabal run runner --ghc-options=&quot;-O2 -rtsopts&quot; -- &quot;1&quot; +RTS -N -qg -A512M -xn -s -RTS
+# cabal run runner --ghc-options=&quot;-O2 -rtsopts&quot; -- &quot;2&quot; +RTS -N -qg -A512M -xn -s -RTS
+# cabal run runner --ghc-options=&quot;-O2 -rtsopts&quot; -- &quot;3&quot; +RTS -N -qg -A512M -xn -s -RTS
+
+
+-- number of qsnoc of each batch
+batchSize :: Int
+batchSize = 1000000
+
+-- number of batch to run
+batchCnt :: Int
+batchCnt = 100
+
+-- total number of benchmark to run
+cnt :: Int
+cnt = 20</code></pre>
+<p>Concurrent gc plus 512M nursery. There should be minimum amount of GC happening here. I got the following result:</p>
+<pre><code>fatmonad@burrita ~/r/n/01-code (main)&gt; source ./runner.sh
+q0:
+  mean:     6304.55
+  median:   6681.71
+  max:      7626.92
+  min:      5370.19
+  variance: 4546236.63
+  std:      2132.19
+ 159,846,876,680 bytes allocated in the heap
+     335,817,920 bytes copied during GC
+      22,662,472 bytes maximum residency (2 sample(s))
+       9,686,456 bytes maximum slop
+           12587 MiB total memory in use (0 MiB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0        11 colls,     0 par    0.137s   0.138s     0.0125s    0.0264s
+  Gen  1         2 colls,     0 par    0.012s   0.012s     0.0060s    0.0085s
+  Gen  1         2 syncs,                       0.000s     0.0001s    0.0002s
+  Gen  1      concurrent,              0.000s   0.008s     0.0042s    0.0084s
+
+  TASKS: 51 (2 bound, 49 peak workers (49 total), using -N24)
+
+  SPARKS: 0 (0 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
+
+  INIT    time    0.121s  (  0.141s elapsed)
+  MUT     time   12.723s  ( 12.768s elapsed)
+  GC      time    0.149s  (  0.150s elapsed)
+  CONC GC time    0.000s  (  0.008s elapsed)
+  EXIT    time    0.004s  (  0.001s elapsed)
+  Total   time   12.998s  ( 13.060s elapsed)
+
+  Alloc rate    12,563,560,603 bytes per MUT second
+
+  Productivity  97.9% of total user, 97.8% of total elapsed
+
+q1:
+  mean:     7077.95
+  median:   7388.01
+  max:      8295.48
+  min:      6269.72
+  variance: 4572417.76
+  std:      2138.32
+ 147,376,206,872 bytes allocated in the heap
+     365,905,032 bytes copied during GC
+      30,549,000 bytes maximum residency (2 sample(s))
+       9,680,344 bytes maximum slop
+           13051 MiB total memory in use (0 MiB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0        30 colls,     0 par    0.000s   0.154s     0.0051s    0.0083s
+  Gen  1         2 colls,     0 par    0.000s   0.039s     0.0194s    0.0235s
+  Gen  1         2 syncs,                       0.000s     0.0000s    0.0000s
+  Gen  1      concurrent,              0.000s   0.000s     0.0001s    0.0003s
+
+  TASKS: 51 (2 bound, 49 peak workers (49 total), using -N24)
+
+  SPARKS: 0 (0 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
+
+  INIT    time    0.121s  (  0.132s elapsed)
+  MUT     time   14.427s  ( 14.312s elapsed)
+  GC      time    0.000s  (  0.193s elapsed)
+  CONC GC time    0.000s  (  0.000s elapsed)
+  EXIT    time    0.028s  (  0.004s elapsed)
+  Total   time   14.576s  ( 14.640s elapsed)
+
+  Alloc rate    10,215,479,332 bytes per MUT second
+
+  Productivity  99.0% of total user, 97.8% of total elapsed
+
+q2:
+  mean:     3737.92
+  median:   3736.85
+  max:      4062.52
+  min:      3565.45
+  variance: 21262.71
+  std:      145.82
+  79,926,770,096 bytes allocated in the heap
+     142,028,496 bytes copied during GC
+      27,928,440 bytes maximum residency (2 sample(s))
+       9,679,384 bytes maximum slop
+           12557 MiB total memory in use (0 MiB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0         5 colls,     0 par    0.060s   0.060s     0.0121s    0.0276s
+  Gen  1         2 colls,     0 par    0.013s   0.015s     0.0076s    0.0130s
+  Gen  1         2 syncs,                       0.000s     0.0000s    0.0001s
+  Gen  1      concurrent,              0.000s   0.000s     0.0002s    0.0003s
+
+  TASKS: 51 (2 bound, 49 peak workers (49 total), using -N24)
+
+  SPARKS: 0 (0 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
+
+  INIT    time    0.147s  (  0.158s elapsed)
+  MUT     time    7.757s  (  7.788s elapsed)
+  GC      time    0.073s  (  0.076s elapsed)
+  CONC GC time    0.000s  (  0.000s elapsed)
+  EXIT    time    0.006s  (  0.008s elapsed)
+  Total   time    7.984s  (  8.030s elapsed)
+
+  Alloc rate    10,303,357,332 bytes per MUT second
+
+  Productivity  97.2% of total user, 97.0% of total elapsed
+
+q3:
+  mean:     134790.22
+  median:   134130.57
+  max:      206362.87
+  min:      63976.03
+  variance: 1556255085.33
+  std:      39449.40
+ 560,562,716,792 bytes allocated in the heap
+     851,471,552 bytes copied during GC
+      39,791,176 bytes maximum residency (2 sample(s))
+       9,683,768 bytes maximum slop
+           12577 MiB total memory in use (0 MiB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0        43 colls,     0 par    0.000s   1.131s     0.0263s    0.0532s
+  Gen  1         2 colls,     0 par    0.000s   0.052s     0.0260s    0.0492s
+  Gen  1         2 syncs,                       0.002s     0.0009s    0.0017s
+  Gen  1      concurrent,              0.000s   0.002s     0.0010s    0.0019s
+
+  TASKS: 51 (2 bound, 49 peak workers (49 total), using -N24)
+
+  SPARKS: 0 (0 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
+
+  INIT    time    0.120s  (  0.132s elapsed)
+  MUT     time  269.752s  (269.527s elapsed)
+  GC      time    0.000s  (  1.183s elapsed)
+  CONC GC time    0.000s  (  0.002s elapsed)
+  EXIT    time    0.007s  (  0.009s elapsed)
+  Total   time  269.879s  (270.850s elapsed)
+
+  Alloc rate    2,078,070,113 bytes per MUT second
+
+  Productivity 100.0% of total user, 99.5% of total elapsed</code></pre>
+<p>I don’t know how to make queue 3 perform, it seems it’s hopelessly slow.</p>
+</div>
+
+
+    <div style="clear: both"></div>
+
+    <div id="footer">
+        Site proudly generated by
+        <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+</div>
+
+
+
+
+        <!-- GUID -->
+        <div style="display: none">ce0f13b2-4a83-4c1c-b2b9-b6d18f4ee6d2</div>
+    </body>
+</html>

@@ -117,7 +117,7 @@ h3 {
 
 
 blockquote {
-    background: #e6e6e6 url("../images/quote-background.png") no-repeat left top;
+    border-left: 3px solid grey;
     font-style: italic;
     margin-left: 18px;
     padding: 6px 6px 6px 54px;

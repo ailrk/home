@@ -49,21 +49,40 @@ import Hakyll (
     tagsRules,
     templateCompiler,
     unixFilterLBS,
-    (.||.), Compiler
+    (.||.),
+    Compiler,
+    Pattern,
+    pandocCompilerWith,
+    defaultHakyllReaderOptions,
+    defaultHakyllWriterOptions
  )
 import Text.Regex.TDFA ((=~))
 import Control.Arrow ((&&&))
+import Text.Pandoc (WriterOptions(..), HTMLMathMethod (..))
 
+
+imagesFolder :: Pattern
+imagesFolder  = "images/*.jpg"
+            .||. "images/*.jpeg"
+            .||. "images/*.png"
+            .||. "images/*.webp"
+            .||. "images/*.gif"
+            .||. "images/*.mp4"
+
+
+
+mathPandocCompiler :: Compiler (Item String)
+mathPandocCompiler =
+  pandocCompilerWith
+    defaultHakyllReaderOptions
+    (defaultHakyllWriterOptions { writerHTMLMathMethod = MathJax "" })
 
 
 main :: IO ()
 main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
     -- Static files
     match
-        ( "images/**/*.jpg"
-            .||. "images/**/*.png"
-            .||. "images/**/*.gif"
-            .||. "images/**/*.mp4"
+        ( imagesFolder
             .||. "favicon.ico"
             .||. "files/**"
         )
@@ -91,10 +110,7 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
 
         -- Static files
         match
-            ( "images/*.jpg"
-                .||. "images/*.png"
-                .||. "images/*.gif"
-                .||. "images/*.mp4"
+            ( imagesFolder
                 .||. "favicon.ico"
                 .||. "files/**"
             )
@@ -122,7 +138,7 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
         match ("posts/*.md" .||. "posts/*.html" .||. "posts/*.lhs") do
             route $ setExtension ".html"
             compile do
-                pandocCompiler
+                mathPandocCompiler
                     >>= saveSnapshot "content"
                     >>= return . fmap demoteHeaders
                     >>= loadAndApplyTemplate "templates/post.html" (postCtx tags)
@@ -140,7 +156,7 @@ main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
         match (fromList pages) do
             route $ setExtension ".html"
             compile $
-                pandocCompiler
+                mathPandocCompiler
                     >>= loadAndApplyTemplate "templates/content.html" defaultContext
                     >>= loadAndApplyTemplate "templates/default.html" defaultContext
                     >>= relativizeUrls

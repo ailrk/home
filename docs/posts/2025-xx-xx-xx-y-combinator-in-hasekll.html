@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+
+        <title>ailrk - Y Combinator in Haskell</title>
+        
+          
+        
+
+        <link rel="preload" href="../fonts/CrimsonPro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="../fonts/PTMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+        <link rel="stylesheet" type="text/css" href="../style.css?v=0">
+        <link rel="icon" type="image/x-icon" href="../favicon.ico">
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+        <!-- Metadata. -->
+        <meta name="description" content="Airlk's personal blog">
+        <meta property="og:description" content />
+    </head>
+    <body>
+        <div id="navigation">
+            <h1>@ilrk</h1>
+            <br />
+            [<a href="../" class="link">home</a>]
+            [<a href="https://github.com/ailrk" class="link">github</a>]
+            [<a href="../About.html" class="link">about</a>]
+        </div>
+
+        <div id="content">
+    <div id="post">
+
+    <h1>Y Combinator in Haskell</h1>
+    <div>
+        
+        <br />
+        <i>Published on January  1, 2025 under the tag <a title="All pages tagged 'en'." href="../tags/en.html" rel="tag">en</a></i>
+        <br />
+        <br />
+    </div>
+
+    <p>Fix point is defined like this:</p>
+<pre><code> fix f = f (fix f)</code></pre>
+<p>But in lambda calculus, we cannot bind a function to a global name. Instead, we achieve fix point with Y combinator. It’s defined like this:</p>
+<pre><code>\f -&gt; (\x -&gt; f (x x)) (\x -&gt; f (x x))</code></pre>
+<p>Lambda calculus doesn’t natively support recurison, but to find the fix point, you have to refer to the recursor somehow. The double application (applying <code>(\x -&gt; f (x x))</code> twice) is needed so you can bind the function into a parameter.</p>
+<p>The expansion looks like this:</p>
+<pre><code>1. (\f -&gt; (\x -&gt; f (x x)) (\x -&gt; f (x x))) F
+2. (\x -&gt; F (x x)) (\x -&gt; F (x x))
+3. F ((\x -&gt; F (x x)) (\x -&gt; F (x x)))
+4. F (F ((\x -&gt; F (x x)) (\x -&gt; F (x x))))
+5. F (F (F ((\x -&gt; F (x x)) (\x -&gt; F (x x)))))
+6. F (F (F (...)))</code></pre>
+<p>People are often too eager when they are talking about the Y combinator, but it’s important to realize that Y combinator is just a hack for lambda calculus. Our real goal is to define <code>fix</code> because that’s what gives us recursion. If we are allowed to bind name, Y can be defined and used like this:</p>
+<pre><code>Y = \f -&gt; (\x -&gt; f (x x)) (\x -&gt; f (x x))
+Y g = g (Y g)</code></pre>
+<p>which is exactly the defintion of <code>fix</code>.</p>
+<h4 id="omega-ω">Omega ω</h4>
+<p>This is <code>ω</code></p>
+<pre><code>ω = \x -&gt; x x</code></pre>
+<p>If you apply <code>ω</code> to itself:</p>
+<pre><code>1. ωω
+2. (\x -&gt; x x)(\x -&gt; x x)
+3. (\x -&gt; x x)(\x -&gt; x x)
+...</code></pre>
+<p>The first ω copies the second one, which form the same structure again. The copy goes on forever. This creates a <strong>“knot”</strong>.</p>
+<p><code>ω = \x -&gt; x x</code> cannot be defined in haskell direclty, becasue the type of x is infinite. This is called a <strong>equirecursive</strong> type, which will be rejected by Hindley-Milner type checker.</p>
+<h4 id="hindley-milner-and-occurs-check">Hindley-Milner and Occurs Check</h4>
+<p>Haskell’s HM type checker prevents you from implementing Y combinator!</p>
+<p>It prevents a type variable t from unifing with a type contain t itself. This is called <strong>Occurs check</strong>.</p>
+<p>Occurs check is required because the type checher need to prevent infinite types in order to make sure the type inference is decidable. But we want to study <code>ω = \x -&gt; x x</code>, in which first has <code>(x :: t -&gt; t0)</code>, second has <code>(x :: t)</code>. To bypass this check, we wrap the recursive x in a type.</p>
+<p>In short, usually you can’t get <code>x ~ x -&gt; x1</code> unified. But you can if you do this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">X</span> x <span class="ot">=</span> <span class="dt">X</span> (<span class="dt">X</span> x <span class="ot">-&gt;</span> x)</span></code></pre></div>
+<p>Think about <code>(X x)</code> as something that can be unified with x. They are isomorphic as long as the recursion goes. This trick is often need in Haskell to work with self-referential structures.</p>
+<p>A side note: Did you notice how <code>(X x)</code> is at the <strong>contravariant</strong> position? Recursion on contravariant position leads to a type consuming itself, this allows you to implement <code>Y</code> combinator.</p>
+<h4 id="equirecursive-vs-isorecursive">Equirecursive vs Isorecursive</h4>
+<p>Why occurs check is applied on type variable alone but not newtype wrapper? To answer this we need to understand different types of recursive types. We have <strong>equirecursive</strong> type where compiler treats the name and the definition as strictly equal, e.g <code>(A = B)</code>; and we have <strong>isorecursive</strong>* type where newtype wrapper is merely isomorphic to its content, the compiler don’t treat them as equal. <code>X ~= X -&gt; Int</code>.</p>
+<p>When you write <code>newtype X x = X (X x -&gt; x)</code>, <code>(X x)</code> and <code>(X x -&gt; x)</code> are distinct types. To go from on to another, you must use the constructor to <strong>wrap</strong> or pattern match to <strong>unwrap</strong> (fold vs unfold). Haskell is isorecursive, hence <code>a ~ a -&gt; b</code> is rejected, but <code>X a ~ X a -&gt; b</code> is allowed, because X is opaque.</p>
+<p><code>newtype</code> introduces a <code>μ-like</code> knot that the type checker is forbidden to unfold automatically. Because of this explicit box, the compiler It sees <code>(X x)</code> and then stops. The explicit fold/unfold is what replaces the forbidden infinite unification.</p>
+<h4 id="define-omega-with-isorecursive-type">Define Omega with Isorecursive type</h4>
+<p>Here is an definition of <code>ω</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">ome ::</span> <span class="dt">X</span> x <span class="ot">-&gt;</span> x</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ome <span class="ot">=</span> \x<span class="op">@</span>(<span class="dt">X</span> x') <span class="ot">-&gt;</span> x' x</span></code></pre></div>
+<p>In untyped lambda calculus, <code>ω</code> is <code>\x -&gt; (x x)</code>. Here we use isorecursive <code>X x</code> in the contravariant position, it is isomorphic to <code>x</code> but allows the HM type checker to terminate. <code>ome</code> is essentially the same as <code>ω</code>.</p>
+<p>To define <code>ωω</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">omeome ::</span> x</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>omeome <span class="ot">=</span> ome (<span class="dt">X</span> ome)</span></code></pre></div>
+<p>Again, <code>X x</code> is just an <code>μ</code> wrapper.</p>
+<p>If you run <code>omeome</code>, it will recurse indefinitely. It’s a bottom value.</p>
+<h4 id="define-y-combinator-with-omega">Define Y combinator with Omega</h4>
+<p>Now we have understood <code>ωω</code>, we can take a step further and reconstruct <code>Y</code> in Haskell. <code>ome</code> and <code>ome'</code> are isomorphic, we just need to fit the type.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">y ::</span> (x <span class="ot">-&gt;</span> x) <span class="ot">-&gt;</span> x</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>y f <span class="ot">=</span> ome ome'</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    ome <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (x (<span class="dt">X</span> x))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    ome' <span class="ot">=</span> (\(<span class="dt">X</span> x) <span class="ot">-&gt;</span> f (ome x))</span></code></pre></div>
+<p>This is how you define a real Y combinator in Haskell.</p>
+</div>
+
+
+    <div style="clear: both"></div>
+
+    <div id="footer">
+        Site proudly generated by
+        <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+</div>
+
+
+
+
+        <!-- GUID -->
+        <div style="display: none">ce0f13b2-4a83-4c1c-b2b9-b6d18f4ee6d2</div>
+    </body>
+</html>
