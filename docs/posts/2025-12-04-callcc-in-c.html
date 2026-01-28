@@ -23,25 +23,19 @@
     </head>
     <body>
         <div id="navigation">
-            <h1>@ilrk</h1>
-            <br />
-            [<a href="../" class="link">home</a>]
-            [<a href="https://github.com/ailrk" class="link">github</a>]
-            [<a href="../About.html" class="link">about</a>]
+            <h3>Ailrk</h3>
+            <a href="../" class="link">home</a>
+            <a href="https://github.com/ailrk" class="link">github</a>
+            <a href="../About.html" class="link">about</a>
         </div>
 
         <div id="content">
     <div id="post">
-
     <h1>Call/cc in C with Stack Copying</h1>
     <div>
         
-        <br />
-        <i>Published on December  4, 2025 under the tag <a title="All pages tagged 'en'." href="../tags/en.html" rel="tag">en</a></i>
-        <br />
-        <br />
+        <i>December  4, 2025, <a title="All pages tagged 'en'." href="../tags/en.html" rel="tag">en</a></i>
     </div>
-
     <p>A continuation represents <strong>“the rest of the computation.”</strong> At any point in a program, the continuation is the answer to the question: “If this expression finishes, what happens next?”</p>
 <p>Continuation is just a semantic concept that describes “the rest of computation”, call/cc, on the other hand, allows you to turn the semantic object into a value you can use. In scheme for example, you can call “the rest of computation” as if it’s a function.</p>
 <p>In a C program, the control state resides on the stack. To implement call/cc, we capture the current state by copying the active stack into the heap. To invoke the continuation later, we load that saved snapshot back into the live stack. The idea is very simple.</p>
