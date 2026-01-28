@@ -2,7 +2,7 @@
 title: The Prince [Book Review]
 date: 2025-08-21
 description: ""
-tags: en
+tags: en, book, history, philosophy
 ---
 
 

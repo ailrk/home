@@ -2,7 +2,7 @@ body {
     margin: auto;
     scrollbar-gutter: stable;
     height: 100%;
-    width: 40vw;
+    width: 50vw;
 }
 
 @media screen and (max-width: 1024px) {

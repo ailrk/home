@@ -2,7 +2,7 @@
 title: Quebec [In Brief Words]
 date: 2025-12-02
 description: ""
-tags: en
+tags: en, in-brief-words
 ---
 
 

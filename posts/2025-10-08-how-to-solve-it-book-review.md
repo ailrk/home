@@ -2,7 +2,7 @@
 title: How to Solve it [Book Review]
 date: 2025-10-08
 description: ""
-tags: en
+tags: en, book, math, code
 ---
 
 

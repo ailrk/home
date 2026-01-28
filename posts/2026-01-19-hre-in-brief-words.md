@@ -2,7 +2,7 @@
 title: Holy Roman Empire (962 - 1806) [In Brief Words]
 date: 2026-01-18
 description: ""
-tags: en
+tags: en, in-brief-words, history
 ---
 
 <img src="../images/hre001.jpg" width="300"></img>

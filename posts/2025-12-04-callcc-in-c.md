@@ -2,7 +2,7 @@
 title: Call/cc in C with Stack Copying
 date: 2025-12-04
 description: ""
-tags: en
+tags: en, code
 ---
 
 A continuation represents **"the rest of the computation."** At any point in a program, the continuation is the answer to the question: "If this expression finishes, what happens next?"

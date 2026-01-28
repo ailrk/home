@@ -2,7 +2,7 @@
 title: Calculus [In Brief Words]
 date: 2026-01-18
 description: ""
-tags: en
+tags: en, in-brief-words, math
 ---
 
 Calculus is about divide and conquer. We first break a whole into infinite pieces, then solve the problem with small pieces, finally we reassemble pieces to get final answer for the whole.

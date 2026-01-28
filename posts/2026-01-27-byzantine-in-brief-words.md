@@ -2,7 +2,7 @@
 title: Byzantine (330 - 1453) [In Brief Words]
 date: 2026-01-27
 description: ""
-tags: en
+tags: en, history
 ---
 
 

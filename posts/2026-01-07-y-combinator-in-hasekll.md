@@ -2,7 +2,7 @@
 title: Y Combinator in Haskell
 date: 2026-01-07
 description: ""
-tags: en
+tags: en, code
 ---
 
 

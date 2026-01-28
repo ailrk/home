@@ -2,7 +2,7 @@
 title: Short history of Khazaria
 date: 2025-12-20
 description: ""
-tags: en
+tags: en, history
 ---
 
 

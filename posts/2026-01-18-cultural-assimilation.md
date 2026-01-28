@@ -2,7 +2,7 @@
 title: Cultural Assimilation
 date: 2026-01-18
 description: ""
-tags: en
+tags: en, culture, history
 ---
 
 

@@ -2,7 +2,7 @@
 title: Modernism [In Brief Words]
 date: 2025-12-22
 description: ""
-tags: en
+tags: en, history, philosophy
 ---
 
 

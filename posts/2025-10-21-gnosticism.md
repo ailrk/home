@@ -1,6 +1,6 @@
 ---
 title: Gnosticism
-date: 2025-01-21
+date: 2025-10-21
 description: ""
 tags: en
 ---

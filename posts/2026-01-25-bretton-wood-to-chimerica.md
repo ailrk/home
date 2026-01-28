@@ -2,7 +2,7 @@
 title: From Bretton-Wood to Chimerica
 date: 2026-01-25
 description: ""
-tags: en
+tags: en, history
 ---
 
 Before the modern era, most major economics used the Gold standard. A country's currency was directly linked to a specific weight of gold. You could in theory walk into a bank and swap  your paper bills for the physical metal. The systme was very stable, but also very rigid. Governments couldn't print money to fight recessions or fund wars without having the physical gold to back it up. After the chaos of great depression and WWII, world leaders wanted a more flexible system.

@@ -15,6 +15,10 @@
   font-display: block;
 }
 
+h1 {
+    line-height: 1;
+
+}
 
 h4, h5, h6 {
   color: #5c5b5b;

@@ -2,7 +2,7 @@
 title: Thomas Aquinas [In Brief Words]
 date: 2025-12-23
 description: ""
-tags: en
+tags: en, history, philosophy
 ---
 
 Thomas Aquinas (1225–1274) was a towering figure of the Middle Ages, an Italian Dominican friar whose work fundamentally reshaped Western philosophy and theology. Known as the "Angelic Doctor", his primary intellectual achievement was the synthesis of Aristotelian philosophy with Christian doctrine. At a time when the rediscovered works of Aristotle were seen by some as a threat to faith, Aquinas argued that reason and revelation are two distinct but compatible streams of truth that both originate from God. He famously asserted that "grace does not destroy nature but perfects it," suggesting that human intellect can bring us to the doorstep of faith, even if divine revelation is needed to cross the threshold.
