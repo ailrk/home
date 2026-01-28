@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+
+        <title>ailrk - Call/cc in C with Stack Copying</title>
+        
+          <link rel="preload" as="image" href="../images/caccic.png">
+
+        
+
+        <link rel="preload" href="../fonts/CrimsonPro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="../fonts/PTMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+        <link rel="stylesheet" type="text/css" href="../style.css?v=0">
+        <link rel="icon" type="image/x-icon" href="../favicon.ico">
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+        <!-- Metadata. -->
+        <meta name="description" content="Airlk's personal blog">
+        <meta property="og:description" content />
+    </head>
+    <body>
+        <div id="navigation">
+            <h1>@ilrk</h1>
+            <br />
+            [<a href="../" class="link">home</a>]
+            [<a href="https://github.com/ailrk" class="link">github</a>]
+            [<a href="../About.html" class="link">about</a>]
+        </div>
+
+        <div id="content">
+    <div id="post">
+
+    <h1>Call/cc in C with Stack Copying</h1>
+    <div>
+        
+        <br />
+        <i>Published on December  4, 2025 under the tag <a title="All pages tagged 'en'." href="../tags/en.html" rel="tag">en</a></i>
+        <br />
+        <br />
+    </div>
+
+    <p>A continuation represents <strong>“the rest of the computation.”</strong> At any point in a program, the continuation is the answer to the question: “If this expression finishes, what happens next?”</p>
+<p>Continuation is just a semantic concept that describes “the rest of computation”, call/cc, on the other hand, allows you to turn the semantic object into a value you can use. In scheme for example, you can call “the rest of computation” as if it’s a function.</p>
+<p>In a C program, the control state resides on the stack. To implement call/cc, we capture the current state by copying the active stack into the heap. To invoke the continuation later, we load that saved snapshot back into the live stack. The idea is very simple.</p>
+<p>This is a very rudimentary C implement of call/cc. The idea is simply moving the stack around:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> Kont <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span>   <span class="op">*</span>stack_copy<span class="op">;</span> <span class="co">// heap buffer with stack snapshot</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span>  size<span class="op">;</span>       <span class="co">// bytes copied</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span>   <span class="op">*</span>sp<span class="op">;</span>         <span class="co">// stack pointer at capture time</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span>     jumped<span class="op">;</span>     <span class="co">// if we just arrived from an invoke</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> Kont<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">char</span> <span class="op">*</span>stack_bottom<span class="op">;</span> <span class="co">// highest address of stack</span></span></code></pre></div>
+<p><img src="../images/caccic.png" width="400" /></p>
+<p>We copy the stack until a defined ‘stack_bottom’. By controlling this boundary (for example, setting it to the top of main’s frame), we can implement delimited continuations to gain finer control. Here we simply capture the entire stack from the very beginning just for clarity.</p>
+<p>C calling conventions have a lot of assumptions on how the stack is used. For example, some registers are caller-saved and some are callee-saved. The compiler sometimes pass arguments directly through register without pushing then to the stack at all.</p>
+<p>call/cc breaks normal stack assumptions (stack discipline), which makes the stack copying very difficult to get right. We need some extra book-keepings to make sure the call/cc works robustly. For example, We can force all callee-saved registers onto the stack before we copy the snapshot.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> capture_kont<span class="op">(</span>Kont <span class="op">*</span>k<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> marker<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>sp <span class="op">=</span> <span class="op">&amp;</span>marker<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> size <span class="op">=</span> stack_bottom <span class="op">-</span> sp<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// force all arguments and callee-saved registers onto the stack.</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    asm <span class="dt">volatile</span><span class="op">(</span><span class="st">&quot;&quot;</span> <span class="op">:</span> <span class="op">:</span> <span class="op">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;rax&quot;</span><span class="op">,</span> <span class="st">&quot;rbx&quot;</span><span class="op">,</span> <span class="st">&quot;rcx&quot;</span><span class="op">,</span> <span class="st">&quot;rdx&quot;</span><span class="op">,</span> <span class="st">&quot;rsi&quot;</span><span class="op">,</span> <span class="st">&quot;rdi&quot;</span><span class="op">,</span> <span class="st">&quot;rbp&quot;</span><span class="op">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;r8&quot;</span><span class="op">,</span> <span class="st">&quot;r9&quot;</span><span class="op">,</span> <span class="st">&quot;r10&quot;</span><span class="op">,</span> <span class="st">&quot;r11&quot;</span><span class="op">,</span> <span class="st">&quot;r12&quot;</span><span class="op">,</span> <span class="st">&quot;r13&quot;</span><span class="op">,</span> <span class="st">&quot;r14&quot;</span><span class="op">,</span> <span class="st">&quot;r15&quot;</span><span class="op">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;memory&quot;</span><span class="op">);</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>k<span class="op">-&gt;</span>stack_copy<span class="op">)</span> free<span class="op">(</span>k<span class="op">-&gt;</span>stack_copy<span class="op">);</span> <span class="co">// clean up old copy if overwriting.</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    k<span class="op">-&gt;</span>stack_copy <span class="op">=</span> malloc<span class="op">(</span>size<span class="op">);</span> <span class="cf">if</span> <span class="op">(!</span>k<span class="op">-&gt;</span>stack_copy<span class="op">)</span> <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    memcpy<span class="op">(</span>k<span class="op">-&gt;</span>stack_copy<span class="op">,</span> sp<span class="op">,</span> size<span class="op">);</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    k<span class="op">-&gt;</span>size <span class="op">=</span> size<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    k<span class="op">-&gt;</span>sp <span class="op">=</span> sp<span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> invoke_kont<span class="op">(</span>Kont <span class="op">*</span>k<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> marker<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>sp <span class="op">=</span> <span class="op">&amp;</span>marker<span class="op">;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>sp <span class="op">&gt;</span> k<span class="op">-&gt;</span>sp<span class="op">)</span> <span class="op">{</span> <span class="co">// move pointer down if needed</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        invoke_kont<span class="op">(</span>k<span class="op">);</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    memcpy<span class="op">(</span>k<span class="op">-&gt;</span>sp<span class="op">,</span> k<span class="op">-&gt;</span>stack_copy<span class="op">,</span> k<span class="op">-&gt;</span>size<span class="op">);</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    asm <span class="dt">volatile</span><span class="op">(</span> <span class="co">// adjust the rsp, and jump back into restored stack.</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;mov %0, </span><span class="sc">%%</span><span class="st">rsp</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;ret</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>            <span class="op">:</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>            <span class="op">:</span> <span class="st">&quot;r&quot;</span><span class="op">(</span>k<span class="op">-&gt;</span>sp<span class="op">)</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>            <span class="op">:</span> <span class="st">&quot;memory&quot;</span><span class="op">);</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>When we invoke later, the stack will be restored, we want to make sure it is a valid C stack. That’s why we capture inside a function: to maintain a valid stack structure.</p>
+<ul>
+<li>We need the return address</li>
+<li>We need to respect modern stack protection.
+(128 byte sredzone beneath sp that compiler uses for locals)</li>
+<li>The call/ret convention is managed by the compiler, otherwise we
+have to hand write it ourself</li>
+</ul>
+<p>Capturing inside a function avoids all of these problems.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Kont k<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> test<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;A</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    capture_kont<span class="op">(&amp;</span>k<span class="op">);</span> <span class="co">// when we go back we starts from here.</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;B</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> stack_marker<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    stack_bottom <span class="op">=</span> <span class="op">&amp;</span>stack_marker<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    test<span class="op">();</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>k<span class="op">.</span>jumped<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">&quot;C (triggering jump)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        k<span class="op">.</span>jumped <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        invoke_kont<span class="op">(&amp;</span>k<span class="op">);</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The output:</p>
+<pre><code>A
+B
+C (triggering jump)
+B</code></pre>
+<p>As you can see, this code is tricky:</p>
+<ul>
+<li>Assumes a downward-growing stack architecture.</li>
+<li>Very brittle interaction with C stack, threads, signal handlers</li>
+<li>Extremely high overhead due to frequent heap-to-stack memory copies.</li>
+<li>Cumbersome compared to high-level languages.</li>
+<li>Jumping back into a function is a UB!</li>
+</ul>
+<p>In practice, C mostly rely on setjmp/longjmp, state machines, or simply goto and manually do all the bookeepings. Languages with native support typically use CPS (Continuation Passing Style) or heap-allocated frames to avoid these low-level memory issues.</p>
+</div>
+
+
+    <div style="clear: both"></div>
+
+    <div id="footer">
+        Site proudly generated by
+        <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+</div>
+
+
+
+
+        <!-- GUID -->
+        <div style="display: none">ce0f13b2-4a83-4c1c-b2b9-b6d18f4ee6d2</div>
+    </body>
+</html>
