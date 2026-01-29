@@ -13,15 +13,20 @@ By the late 1960s, the system was cracking. The US was spending heavily on the V
 
 Famously, the then French president Charles de Gaulle was the Bretton Woods System as a "racket" that gave the United States an "exorbitant privilege." The US was cheating in this sytem, because the dollar was the world's reserve currency, the US could run massive deficits to fund its war and its domestic spending without facing a bill. While other countries have to keep their budgets balanced, the US can just keep printing dollars, knowing the rest of the world had to catch them.
 
+<div style="overflow:auto;">
+<img src="../images/degaul.jpeg" width="150" style="float:left; margin-right:10px;"></img>
 In 1965, De Gaulle declared that international trade should be based on an indisputable monetary basis, and that basis is gold. He decided to call the Americans' bluff. He systematically trading in France's surplus US dollars for actual gold from the US treasury at fixed rate of `$35` per once, and literately sent the French Navy across the Atlantic to pick up the gold bars and bring them back to Paris.
 
 De Gaulle's move started a "run on the bank." Other countries like West Germany and the UK saw this and realized the US didn't have enough gold to cover all the dollars in the market. By 1971, the US gold stock had plummeted. Nixon was faced with two choices: Drastically cut spending and raise interest rates, which was a political suicide, or default. Nixon chose the later.
+</div>
 
 In August 1971, President Richard Nixon unilaterally ended the direct convertibility of the USD to gold. This effectively ended the Bretton Wood system. Currencies began to float against each other based on market demand rather than a fixed gold price. We entered the era of Fiat Currency.
 
-Before 1971, the US dollar was pegged to gold at `$35` per once, once the link was cut off, gold was no longer a fixed rate currency anchor but a freely traded commodity. This led to massive volatility. There was an immediate surge on the gold price, by 1972, it already jumped to `$63.84`, an 82% increase. The entire 70s was a moonshot of the gold price, by 1980, it reached the peak of `$850` per ounce. Bear in mind that there were already excessive US dollars circulating around the globe, this surge was just a reality check.
+<div style="overflow:auto;">
+<img src="../images/gpnixo.webp" width="200" style="float:left; margin-right:10px;"></img>
 
-<img src="../images/gpnixo.webp" width="400"></img>
+Before 1971, the US dollar was pegged to gold at `$35` per once, once the link was cut off, gold was no longer a fixed rate currency anchor but a freely traded commodity. This led to massive volatility. There was an immediate surge on the gold price, by 1972, it already jumped to `$63.84`, an 82% increase. The entire 70s was a moonshot of the gold price, by 1980, it reached the peak of `$850` per ounce. Bear in mind that there were already excessive US dollars circulating around the globe, this surge was just a reality check.
+</div>
 
 Paradoxically, the Nixon Shock ushred the Fiat Currency Era. Despite being turbulent at the beginning, the US dollar eventually became even more dominant, because they are no longer any alternative "anchor." In Bretton Wood era, the US had to worry about the gold reserve, but in the Fiat Currency era, as long as the rest of the world can catch the inflation, there is no consequence for the US. It's effectively exporting inflation, money feels free. In another word, it's stealing from the rest of the world.
 
@@ -37,7 +42,11 @@ The peak of Neoliberalism was the creation of the "Chimerica." After 10 years of
 
 Since the 80s, China was gradually building up its financial sector. Initially through investors from Hongkong, Taiwan, Macau, and Japan, and slowly created more and more ties with the rest of the world. By the mid 90s, China already had a stable market for foreign investment. The US-China trade accelerated since 1990s, large amount of US investment went into China. These money came from the overpriced US stock market, and flooded the Chinese finacial market. The dying manufacturing industry in the US was shifted to China along with this tide of investment. By 2000, the ecnomic of these two countries are already fundamentally tied together, created the so called "Chimerica."
 
+
+<div style="overflow:auto;">
+<img src="../images/chimer.jpg" width="150" style="float:left; margin-right:10px;"></img>
 Chimerica works like this: China did the saving and the manufacturing, America did the spending and the consuming. First, China sells gadgets to Americans for US dollars, China doesn't like to spend these dollars, otherwise it will make Yuan too expensive and hurt exporting. Instead, China lends those dollars back to the US by buying US Treasury bonds. This keeps the US interest rates low, so American can borrow more money to buy more from China.
+</div>
 
 For the last 30 years, Chimerica was essentially a subsidy for the American lifestyle. It was a perfect machine for delivering cheap goods for the US consumers while keeping the bill hidden. Under the peak of Chimerica, which was around 2001 to 2018, China's massive labor force and undervalued currency created the so called China price, the lowest possible price from IPhone to T-Shirts. Because China lend money back to the US through the US Treasury, US get what they spent back so they can buy more stuff.
 
