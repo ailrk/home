@@ -15,6 +15,15 @@
         <link rel="stylesheet" type="text/css" href="../style.css?v=0">
         <link rel="icon" type="image/x-icon" href="../favicon.ico">
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.addEventListener('copy', function (e) {
+                    if (e.target.closest('.no-copy')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        </script>
 
         <!-- Metadata. -->
         <meta name="description" content="Airlk's personal blog">
@@ -29,7 +38,7 @@
         </div>
 
         <div id="content">
-    <div id="post">
+    <div id="post" class="no-copy">
     <h1>丑陋的中国人【书评】</h1>
     <div>
         
