@@ -5,7 +5,6 @@ description: ""
 tags: en
 ---
 
-
 Gnosticism was a diverse collection of religious movements and philosophical ideas that flourished in the early centuries of the Common Era, primarily alongside early Christianity. The world itself stems from the Greek term gnosis, meaning "knowledge", but not just intellectual information; it refers to a deep, experiental insight into the nature of the divine. Central to Gnostic belief was the idea that the material world is inherently flawed or even evil, created not by the supreme, benevolent God, but by an inferior and often arrogant artisan-deity known as the Demiurge.
 
 According to Gnostic thought, human beings contain a "diving spark" or a fragment of the true celestial realm that has become trapped within the physical body and the material universe. Salvation, therefore, is not achieved through faith, good works, or adherence to law, but through the awakening of this spark via secret knowledge. This gnosis allows the soul to recognize its true origin and ascend back tothe spriritual realm, or Pleroma, after death. Because of its emphasis on internal revelation and its rejection of the physical world-including the traditional structures of the church-gnosticism was eventually condemned as heresy by orthodox Chrsitian leaders, leading many of its original texts, such as those found at Nag Hammadi, to be hidden or destroyed for centuries.
