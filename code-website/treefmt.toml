@@ -1,0 +1,5 @@
+[formatter.haskell]
+command = "fourmolu"
+options = [ "--mode", "inplace" ]
+includes = [ "*.hs" ]
+excludes = [ ]

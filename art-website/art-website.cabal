@@ -1,5 +1,5 @@
 cabal-version:      2.4
-name:               website
+name:               art-website
 version:            0.1.0.0
 author:             Ailrk
 maintainer:         jimmy@ailrk.com
@@ -38,23 +38,14 @@ common options
       -Wno-ambiguous-fields
       -Wno-missing-export-lists
 
-
-executable website
+executable art-website
     import: extensions, options
     main-is: Main.hs
     hs-source-dirs: website
     build-depends:
         base >=4.16.1.0
       , pandoc
-      , hakyll
-      , hakyll-images
-      , hakyll-sass
-      , filepath
-      , directory
-      , text
-      , time
-      , bytestring
-      , lucid
+      , hakyll >= 4.17.0.0
       , regex-tdfa
 
     default-language: Haskell2010
