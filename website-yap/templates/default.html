@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" $if(dark)$class="dark"$endif$>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+
+        <title>ailrk - $title$</title>
+        $if(preloads)$
+          $preloads$
+        $endif$
+
+        <link rel="preload" href="../fonts/CrimsonPro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link rel="preload" href="../fonts/PTMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+        <link rel="stylesheet" type="text/css" href="/style.css?v=0">
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.addEventListener('copy', function (e) {
+                    if (e.target.closest('.no-copy')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        </script>
+
+        <!-- Metadata. -->
+        <meta name="description" content="Airlk's blog">
+        $if(description)$<meta property="og:description" content="$description$" />$endif$
+    </head>
+    <body>
+        <div id ="navigation">
+            <h3>AILRK</h3>
+            <a href="/" class="link">home</a>
+            <a href="/tags.html" class="link">tags</a>
+        </div>
+
+        $body$
+
+        <!-- GUID -->
+        <div style="display: none">78a69351-8671-4ace-ab28-0635482d18ab</div>
+    </body>
+</html>
