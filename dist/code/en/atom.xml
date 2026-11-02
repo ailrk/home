@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Ailrk · code / en</title>
+    <subtitle><![CDATA[Ailrk's blog, code, en]]></subtitle>
+    <link href="https://blog.ailrk.com/code/en/atom.xml" rel="self" />
+    <link href="https://blog.ailrk.com" />
+    <id>https://blog.ailrk.com/code/en/atom.xml</id>
+    <author>
+        <name>ailrk</name>
+        
+        <email>jimmy123good@gmail.com</email>
+        
+    </author>
+    <updated>Unknown</updated>
+    
+</feed>

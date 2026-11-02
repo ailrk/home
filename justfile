@@ -1,7 +1,14 @@
-mod yap './website-yap'
-mod code './website-code'
+default:
+  @just --list
 
+check:
+	cabal run --offline -- website check
+
+watch:
+	cabal run --offline -- website watch
 
 build:
-  just yap build
-  just code build
+	cabal run --offline -- website build
+
+clean:
+	cabal run --offline -- website clean

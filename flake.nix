@@ -14,19 +14,13 @@
         in
         {
           packages = {
-            codeDist = pkgs.stdenv.mkDerivation {
-              name = "website-code";
-              src = ./website-code/dist;
+            websiteDist = pkgs.stdenv.mkDerivation {
+              name = "website";
+              src = ./dist;
               installPhase = "cp -r . $out";
             };
 
-            yapDist = pkgs.stdenv.mkDerivation {
-              name = "website-yap";
-              src = ./website-yap/dist;
-              installPhase = "cp -r . $out";
-            };
-
-            default = self.packages.${system}.codeDist;
+            default = self.packages.${system}.websiteDist;
           };
         };
     in

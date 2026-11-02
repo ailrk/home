@@ -1,7 +1,4 @@
 cradle:
   cabal:
-    - path: "./website-code"
-      component: "website-code:exe:website"
-
-    - path: "./website-yap"
-      component: "website-yap:exe:website"
+    - path: "./website"
+      component: "exe:website"
