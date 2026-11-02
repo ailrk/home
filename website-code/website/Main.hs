@@ -82,7 +82,7 @@ mathPandocCompiler =
 
 
 main :: IO ()
-main = hakyllWith defaultConfiguration{destinationDirectory = "docs"} do
+main = hakyllWith defaultConfiguration{destinationDirectory = "dist"} do
   -- Static files
   match
       ( imagesFolder

@@ -1,5 +1,5 @@
 {
-  description = "website";
+  description = "static websites";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/48652e9d5aea46e555b3df87354280d4f29cd3a3";
@@ -8,36 +8,27 @@
 
   outputs = { self, flake-utils, ... }@inputs:
     let
-      overlay = final: prev: {
-        haskell = prev.haskell // {
-          packageOverrides = hfinal: hprev:
-            prev.haskell.packageOverrides hfinal hprev // {
-              website = (hfinal.callPackage ./default.nix {});
-            };
-        };
-        website =
-          with final.haskell.lib.compose;
-          overrideCabal (drv: {
-            disallowGhcReference = false;
-            enableSeparateDataOutput = false;
-          }) (justStaticExecutables final.haskellPackages.website);
-      };
-
       perSystem = system:
         let
-          pkgs = import inputs.nixpkgs { inherit system; overlays = [ overlay ]; };
-          hspkgs = pkgs.haskellPackages;
+          pkgs = import inputs.nixpkgs { inherit system; };
         in
         {
-          devShells = {
-            default = pkgs.callPackage ./shell.nix { hspkgs = hspkgs; };
-          };
+          packages = {
+            codeDist = pkgs.stdenv.mkDerivation {
+              name = "website-code";
+              src = ./website-code/dist;
+              installPhase = "cp -r . $out";
+            };
 
-          packages = rec {
-            default = website;
-            website = pkgs.website;
+            yapDist = pkgs.stdenv.mkDerivation {
+              name = "website-yap";
+              src = ./website-yap/dist;
+              installPhase = "cp -r . $out";
+            };
+
+            default = self.packages.${system}.codeDist;
           };
         };
     in
-    { inherit overlay; } // flake-utils.lib.eachDefaultSystem perSystem;
+    flake-utils.lib.eachDefaultSystem perSystem;
 }
