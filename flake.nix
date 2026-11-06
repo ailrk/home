@@ -11,6 +11,7 @@
       perSystem = system:
         let
           pkgs = import inputs.nixpkgs { inherit system; };
+          hspkgs = pkgs.haskellPackages;
         in
         {
           packages = {
@@ -21,6 +22,11 @@
             };
 
             default = self.packages.${system}.websiteDist;
+          };
+
+          devShells = rec {
+            default = filehub-shell;
+            filehub-shell = pkgs.callPackage ./shell.nix { hspkgs = hspkgs; };
           };
         };
     in
