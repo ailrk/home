@@ -26,7 +26,7 @@
 
           devShells = rec {
             default = filehub-shell;
-            filehub-shell = pkgs.callPackage ./shell.nix { hspkgs = hspkgs; };
+            filehub-shell = pkgs.callPackage ./shell.nix { inherit hspkgs; };
           };
         };
     in

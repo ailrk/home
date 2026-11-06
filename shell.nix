@@ -1,7 +1,7 @@
 { pkgs, hspkgs }:
 hspkgs.shellFor {
   withHoogle = true;
-  packages = p: [ hspkgs.website ];
+  packages = p: [];
   buildInputs = [
     hspkgs.cabal-install
     hspkgs.haskell-language-server
